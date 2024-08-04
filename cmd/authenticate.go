@@ -8,19 +8,19 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/lestrrat-go/jwx/jwk"
 
 	"github.com/lestrrat-go/jwx/jwt"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver"
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/randx"
 	"github.com/spf13/cobra"
 	"github.com/toqueteos/webbrowser"
 	"golang.org/x/oauth2"
+
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/randx"
 )
 
 func newAuthenticateCommand() *cobra.Command {
@@ -29,7 +29,7 @@ func newAuthenticateCommand() *cobra.Command {
 		Short: "Sign in with your Tesla account to call the Tesla API",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			r, err := driver.NewOidcRegistry()
+			r, err := driver.NewOidcRegistry(ctx)
 			if err != nil {
 				return err
 			}
@@ -88,16 +88,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 		return nil, err
 	}
 
-	conf := oauth2.Config{
-		ClientID: r.TeslaOAuthConfig().OAuthClientID,
-		Endpoint: oauth2.Endpoint{
-			TokenURL:  r.TeslaOAuthConfig().OAuthIssuer + "/token/",
-			AuthURL:   r.TeslaOAuthConfig().OAuthIssuer + "/authorize",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		RedirectURL: r.TeslaOAuthConfig().OAuthRedirectURI,
-		Scopes:      r.TeslaOAuthConfig().OAuthScopes(),
-	}
+	conf := r.TeslaOAuthConfig().Config()
 	fmt.Println("ClientID:", r.TeslaOAuthConfig().OAuthClientID)
 	var generateAuthCodeURL = func() (string, []rune, string, error) {
 		state, err := randx.RuneSequence(24, randx.AlphaLower)
@@ -113,7 +104,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 
 		authCodeURL := conf.AuthCodeURL(
 			string(state),
-			oauth2.SetAuthURLParam("audience", strings.Join([]string{r.TeslaAPIConfig().APIHost}, "+")),
+			oauth2.SetAuthURLParam("audience", r.TeslaOAuthConfig().Audience()),
 			oauth2.SetAuthURLParam("nonce", string(nonce)),
 			oauth2.S256ChallengeOption(verifier),
 			//oauth2.SetAuthURLParam("prompt", strings.Join(prompt, "+")),
@@ -187,7 +178,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 			ctx,
 			code,
 			oauth2.VerifierOption(verifier),
-			oauth2.SetAuthURLParam("audience", strings.Join([]string{r.TeslaAPIConfig().APIHost}, "+")),
+			oauth2.SetAuthURLParam("audience", r.TeslaOAuthConfig().Audience()),
 		)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Unable to exchange code for token: %s\n", err)

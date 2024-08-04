@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/predicate"
 )
 

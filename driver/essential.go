@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
@@ -13,6 +14,7 @@ import (
 
 type (
 	EssentialRegistry interface {
+		Context() context.Context
 		configuration.Provider
 		logx.Provider
 		httpclient.Provider
@@ -20,35 +22,37 @@ type (
 		repository.Provider
 	}
 	essentialRegistry struct {
-		config     configuration.Configuration
+		ctx context.Context
+		configurationProvider
 		logger     *slog.Logger
 		httpclient http.Client
 
-		repository.Provider
+		repositoryProvider
 	}
 )
 
 var _ EssentialRegistry = new(essentialRegistry)
 
-func NewEssentialRegistry() (EssentialRegistry, error) {
+func NewEssentialRegistry(ctx context.Context) (EssentialRegistry, error) {
 	config, err := configuration.New()
 	if err != nil {
 		return nil, err
 	}
 	repo, err := sqlite.NewProvider(config)
 	return &essentialRegistry{
-		config:   config,
-		Provider: repo,
+		ctx:                   ctx,
+		configurationProvider: config,
+		repositoryProvider:    repo,
 	}, nil
 }
 
-func (r *essentialRegistry) Configuration() configuration.Configuration {
-	return r.config
+func (r *essentialRegistry) Context() context.Context {
+	return r.ctx
 }
 
 func (r *essentialRegistry) Logger() *slog.Logger {
 	if r.logger == nil {
-		r.logger = logx.New(r.Configuration().AppConfig().LogLevel)
+		r.logger = logx.New(r.AppConfig().LogLevel)
 	}
 	return r.logger
 }

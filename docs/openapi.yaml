@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Charging Management Service
+  version: 0.0.0
+tags: []
+paths:
+  /vehicle:
+    get:
+      operationId: getVehicleData
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleData'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /vehicle/charge/setting:
+    get:
+      operationId: Setting_getVehicleChargeSetting
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Charge.Setting.Setting'
+components:
+  schemas:
+    Charge.Setting.Setting:
+      type: object
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+    ChargeState:
+      type: object
+      required:
+        - battery_level
+        - battery_range
+        - charge_amps
+        - charge_current_request
+        - charge_current_request_max
+        - charge_enable_request
+        - charge_limit_soc
+        - charge_port_door_open
+        - charge_port_latch
+        - charger_actual_current
+        - charger_voltage
+        - charging_state
+        - minutes_to_full_charge
+        - time_to_full_charge
+        - timestamp
+        - usable_battery_level
+      properties:
+        battery_level:
+          type: integer
+          minimum: 0
+          maximum: 100
+        battery_range:
+          type: number
+        charge_amps:
+          type: integer
+        charge_current_request:
+          type: integer
+        charge_current_request_max:
+          type: integer
+        charge_enable_request:
+          type: boolean
+        charge_limit_soc:
+          type: integer
+          minimum: 0
+          maximum: 100
+        charge_port_door_open:
+          type: boolean
+        charge_port_latch:
+          type: string
+          example: Engaged
+        charger_actual_current:
+          type: integer
+        charger_voltage:
+          type: integer
+        charging_state:
+          type: string
+          example: Charging
+        minutes_to_full_charge:
+          type: integer
+        time_to_full_charge:
+          type: number
+        timestamp:
+          type: integer
+          format: int64
+        usable_battery_level:
+          type: integer
+          minimum: 0
+          maximum: 100
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+    ErrorCode:
+      type: string
+      enum:
+        - FailedPrecondition
+        - ValidationError
+        - NotFound
+        - InternalServerError
+    VehicleData:
+      type: object
+      required:
+        - vin
+        - state
+        - charge_state
+      properties:
+        vin:
+          type: string
+          minLength: 1
+        state:
+          type: string
+          enum:
+            - online
+            - offline
+        charge_state:
+          $ref: '#/components/schemas/ChargeState'
+servers:
+  - url: http://localhost:8088
+    description: API server endpoint
+    variables: {}

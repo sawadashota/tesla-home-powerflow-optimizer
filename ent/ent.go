@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/grant"
 )
 

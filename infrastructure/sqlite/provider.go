@@ -4,6 +4,7 @@ import (
 	"context"
 
 	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent"

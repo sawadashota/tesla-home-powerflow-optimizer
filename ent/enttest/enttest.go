@@ -10,6 +10,7 @@ import (
 	_ "github.com/sawadashota/tesla-home-powerflow-optimizer/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/migrate"
 )
 

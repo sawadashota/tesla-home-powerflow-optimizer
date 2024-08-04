@@ -1,6 +1,8 @@
 package driver
 
 import (
+	"context"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
@@ -11,7 +13,6 @@ type (
 	OidcRegistry interface {
 		logx.Provider
 		configuration.TeslaOAuthConfigProvider
-		configuration.TeslaAPIConfigProvider
 		repository.MigrationProvider
 		service.GrantServiceProvider
 	}
@@ -23,22 +24,14 @@ type (
 
 var _ OidcRegistry = new(oidcRegistry)
 
-func NewOidcRegistry() (OidcRegistry, error) {
-	registry, err := NewEssentialRegistry()
+func NewOidcRegistry(ctx context.Context) (OidcRegistry, error) {
+	registry, err := NewEssentialRegistry(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &oidcRegistry{
 		EssentialRegistry: registry,
 	}, nil
-}
-
-func (r *oidcRegistry) TeslaOAuthConfig() *configuration.TeslaOAuthConfig {
-	return r.Configuration().TeslaOAuthConfig()
-}
-
-func (r *oidcRegistry) TeslaAPIConfig() *configuration.TeslaAPIConfig {
-	return r.Configuration().TeslaAPIConfig()
 }
 
 func (r *oidcRegistry) GrantService() *service.GrantService {

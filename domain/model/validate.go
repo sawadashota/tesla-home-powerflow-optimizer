@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	"github.com/morikuni/failure/v2"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -12,7 +12,11 @@ type Validator interface {
 
 func Validate(v any) error {
 	if err := validator.New().Struct(v); err != nil {
-		return fmt.Errorf("%w: %w", ErrValidationError, err)
+		return failure.New(
+			ErrCodeValidationError,
+			failure.Message("validation error"),
+			failure.CallStackOf(err),
+		)
 	}
 	return nil
 }

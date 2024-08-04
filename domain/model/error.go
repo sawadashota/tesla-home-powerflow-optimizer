@@ -1,9 +1,14 @@
 package model
 
-import "errors"
+type ErrorCode string
 
-var ErrValidationError = errors.New("validation error")
+const (
+	ErrCodeValidationError ErrorCode = "ValidationError"
 
-var (
-	ErrGrantNotFound = errors.New("grant not found")
+	ErrCodeInternalServer ErrorCode = "InternalServer"
+	ErrCodeUnauthorized   ErrorCode = "Unauthorized"
+	ErrCodeForbidden      ErrorCode = "Forbidden"
+	ErrCodeNotFound       ErrorCode = "NotFound"
+
+	ErrCodeDeviceOffline ErrorCode = "DeviceOffline"
 )

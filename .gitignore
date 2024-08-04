@@ -23,6 +23,13 @@ go.work
 
 .envrc
 
+private_key.pem
+public_key.pem
+
 # sqlite database
 sqlite.db
 test.db
+
+# TypeSpec
+node_modules
+tsp-output

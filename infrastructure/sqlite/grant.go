@@ -3,6 +3,8 @@ package sqlite
 import (
 	"context"
 
+	"github.com/morikuni/failure/v2"
+
 	"entgo.io/ent/dialect/sql"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
@@ -27,7 +29,7 @@ func (r *grantRepository) FindLatestOne(ctx context.Context) (*model.Grant, erro
 	found, err := r.client.Grant.Query().Order(entgrant.ByID(sql.OrderDesc())).First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, model.ErrGrantNotFound
+			return nil, failure.New(model.ErrCodeNotFound, failure.Message("grant not found"))
 		}
 		return nil, err
 	}

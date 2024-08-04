@@ -1,0 +1,24 @@
+{
+  "name": "tesla-home-powerflow-optimizer",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "tsp": "tsp compile .",
+    "tsp:watch": "tsp compile . --watch",
+    "lint": "tsp format --check '**/*.tsp'",
+    "lint:fix": "tsp format '**/*.tsp'"
+  },
+  "peerDependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/rest": "latest",
+    "@typespec/openapi3": "latest"
+  },
+  "devDependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/rest": "latest",
+    "@typespec/openapi3": "latest"
+  },
+  "private": true
+}
