@@ -12,5 +12,5 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.AddCommand(newServeCommand(), newAuthenticateCommand())
+	rootCmd.AddCommand(newServeCommand(), newAuthenticateCommand(), newTestCmd())
 }

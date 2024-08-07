@@ -9,7 +9,7 @@ import (
 type (
 	GrantRepository interface {
 		// FindLatestOne finds the latest grant
-		// If there is no grant, it returns *model.ErrGrantNotFound
+		// If there is no grant, it returns an error with *model.ErrCodeNotFound
 		FindLatestOne(ctx context.Context) (*model.Grant, error)
 		SaveOne(ctx context.Context, grant *model.Grant) error
 	}

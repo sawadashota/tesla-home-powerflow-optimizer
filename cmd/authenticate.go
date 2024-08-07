@@ -24,20 +24,20 @@ import (
 )
 
 func newAuthenticateCommand() *cobra.Command {
+	var r driver.OidcRegistry
 	cmd := &cobra.Command{
 		Use:   "authenticate",
 		Short: "Sign in with your Tesla account to call the Tesla API",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := cmd.Context()
-			r, err := driver.NewOidcRegistry(ctx)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			r, err = driver.NewOidcRegistry(cmd.Context())
 			if err != nil {
 				return err
 			}
-			r.Logger().Info("Migrating database...")
-			if err := r.Migrate(ctx); err != nil {
-				return err
-			}
-
+			return setup(cmd.Context(), r)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			r.Logger().Info("Starting sign in with Tesla")
 			grant, err := signInWithTesla(ctx, r)
 			if err != nil {

@@ -9,6 +9,42 @@ import (
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent"
 )
 
+// The ChargeCommandHistoryFunc type is an adapter to allow the use of ordinary
+// function as ChargeCommandHistory mutator.
+type ChargeCommandHistoryFunc func(context.Context, *ent.ChargeCommandHistoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ChargeCommandHistoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ChargeCommandHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChargeCommandHistoryMutation", m)
+}
+
+// The ChargeSettingFunc type is an adapter to allow the use of ordinary
+// function as ChargeSetting mutator.
+type ChargeSettingFunc func(context.Context, *ent.ChargeSettingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ChargeSettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ChargeSettingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChargeSettingMutation", m)
+}
+
+// The ChargeStateCacheFunc type is an adapter to allow the use of ordinary
+// function as ChargeStateCache mutator.
+type ChargeStateCacheFunc func(context.Context, *ent.ChargeStateCacheMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ChargeStateCacheFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ChargeStateCacheMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChargeStateCacheMutation", m)
+}
+
 // The GrantFunc type is an adapter to allow the use of ordinary
 // function as Grant mutator.
 type GrantFunc func(context.Context, *ent.GrantMutation) (ent.Value, error)
@@ -19,6 +55,18 @@ func (f GrantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GrantMutation", m)
+}
+
+// The PowerMetricFunc type is an adapter to allow the use of ordinary
+// function as PowerMetric mutator.
+type PowerMetricFunc func(context.Context, *ent.PowerMetricMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PowerMetricFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PowerMetricMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PowerMetricMutation", m)
 }
 
 // Condition is a hook condition function.

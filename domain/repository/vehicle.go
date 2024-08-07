@@ -29,6 +29,9 @@ type (
 		// 	You should check if the vehicle is registered in the Tesla account or the VIN is correct.
 		WakeUp(ctx context.Context, vin string) error
 
+		// WaitUntilWakedUp the vehicle from sleep
+		WaitUntilWakedUp(ctx context.Context, vin string) (*model.VehicleData, error)
+
 		// StartCharge the vehicle
 		//
 		// If the vehicle is not found, it will return a model.ErrCodeNotFound error.
@@ -51,5 +54,20 @@ type (
 	}
 	VehicleRepositoryProvider interface {
 		VehicleRepository() VehicleRepository
+	}
+)
+
+type (
+	VehicleChargeStateCache interface {
+		// FindOne finds the latest vehicle charge state cache
+		// If there is no vehicle charge state cache, it returns an error with *model.ErrCodeNotFound
+		FindOne(ctx context.Context, vin string) (*model.VehicleChargeState, error)
+
+		// SaveOne saves the vehicle charge state cache
+		// If the vehicle charge state cache is not found, it will create a new one.
+		SaveOne(ctx context.Context, state *model.VehicleChargeState) error
+	}
+	VehicleChargeStateCacheProvider interface {
+		VehicleChargeStateCache() VehicleChargeStateCache
 	}
 )

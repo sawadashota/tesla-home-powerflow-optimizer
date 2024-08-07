@@ -13,5 +13,7 @@ func (m *Middleware) NewRequestValidatorMiddleware() func(http.Handler) http.Han
 	if err != nil {
 		panic(err)
 	}
-	return nethttpmiddleware.OapiRequestValidator(swagger)
+	return nethttpmiddleware.OapiRequestValidatorWithOptions(swagger, &nethttpmiddleware.Options{
+		SilenceServersWarning: true,
+	})
 }

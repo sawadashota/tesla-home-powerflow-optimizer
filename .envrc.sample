@@ -3,3 +3,7 @@ export TESLA_API_OAUTH_CLIENT_ID=
 export TESLA_API_OAUTH_REDIRECT_URI=http://localhost:3090/oauth/signin/callback
 export TESLA_API_HOST=https://fleet-api.prd.na.vn.cloud.tesla.com
 export TESLA_VIN=
+
+export AISEG2_ORIGIN=
+export AISEG2_USER=
+export AISEG2_PASSWORD=

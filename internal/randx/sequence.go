@@ -34,3 +34,27 @@ func RuneSequence(l int, allowedRunes []rune) (seq []rune, err error) {
 
 	return seq, nil
 }
+
+func MustRuneSequence(l int, allowedRunes []rune) []rune {
+	seq, err := RuneSequence(l, allowedRunes)
+	if err != nil {
+		panic(err)
+	}
+	return seq
+}
+
+func String(l int, allowedRunes []rune) (string, error) {
+	seq, err := RuneSequence(l, allowedRunes)
+	if err != nil {
+		return "", err
+	}
+	return string(seq), nil
+}
+
+func MustString(l int, allowedRunes []rune) string {
+	seq, err := String(l, allowedRunes)
+	if err != nil {
+		panic(err)
+	}
+	return seq
+}

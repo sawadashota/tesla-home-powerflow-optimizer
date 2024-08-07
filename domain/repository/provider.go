@@ -10,4 +10,8 @@ type Provider interface {
 	MigrationProvider
 
 	GrantRepositoryProvider
+	PowerMetricRepositoryProvider
+	ChargeSettingRepositoryProvider
+	VehicleChargeStateCacheProvider
+	ChargeCommandHistoryRepositoryProvider
 }

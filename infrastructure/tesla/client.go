@@ -4,11 +4,12 @@ import (
 	"context"
 	"net/http"
 
+	"golang.org/x/oauth2"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/httpclient"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
-	"golang.org/x/oauth2"
 )
 
 const userAgent = "TeslaHomePowerflowOptimizer/1.0"

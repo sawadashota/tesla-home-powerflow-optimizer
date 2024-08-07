@@ -1,12 +1,18 @@
 package configuration
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	"time"
+
+	"github.com/kelseyhightower/envconfig"
+)
 
 type (
 	AppConfig struct {
-		LogLevel  string `envconfig:"LOG_LEVEL" default:"INFO"`
-		TeslaVIN  string `envconfig:"TESLA_VIN" required:"true"`
-		SqliteDSN string `envconfig:"SQLITE_DSN" default:"file:sqlite.db?cache=shared&_fk=1"`
+		LogLevel          string `envconfig:"LOG_LEVEL" default:"INFO"`
+		TeslaVIN          string `envconfig:"TESLA_VIN" required:"true"`
+		SqliteDSN         string `envconfig:"SQLITE_DSN" default:"file:sqlite.db?cache=shared&_fk=1"`
+		Collector         string `envconfig:"COLLECTOR" default:"aiseg2"`
+		CollectorInterval int    `envconfig:"COLLECTOR_INTERVAL" default:"5"`
 	}
 	AppConfigProvider interface {
 		AppConfig() *AppConfig
@@ -22,6 +28,10 @@ func NewAppConfig() (*AppConfig, error) {
 		return nil, err
 	}
 	return c, nil
+}
+
+func (c *AppConfig) CollectorIntervalDuration() time.Duration {
+	return time.Duration(c.CollectorInterval) * time.Minute
 }
 
 func NewAppConfigProvider(config *AppConfig) AppConfigProvider {

@@ -14,6 +14,7 @@ type (
 		logx.Provider
 		configuration.TeslaOAuthConfigProvider
 		repository.MigrationProvider
+		repository.ChargeSettingRepositoryProvider
 		service.GrantServiceProvider
 	}
 	oidcRegistry struct {

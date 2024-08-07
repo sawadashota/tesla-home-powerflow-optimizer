@@ -13,7 +13,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargecommandhistory"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargesetting"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargestatecache"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/grant"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/powermetric"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -74,7 +78,11 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			grant.Table: grant.ValidColumn,
+			chargecommandhistory.Table: chargecommandhistory.ValidColumn,
+			chargesetting.Table:        chargesetting.ValidColumn,
+			chargestatecache.Table:     chargestatecache.ValidColumn,
+			grant.Table:                grant.ValidColumn,
+			powermetric.Table:          powermetric.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

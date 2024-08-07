@@ -12,8 +12,16 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// ChargeCommandHistory is the client for interacting with the ChargeCommandHistory builders.
+	ChargeCommandHistory *ChargeCommandHistoryClient
+	// ChargeSetting is the client for interacting with the ChargeSetting builders.
+	ChargeSetting *ChargeSettingClient
+	// ChargeStateCache is the client for interacting with the ChargeStateCache builders.
+	ChargeStateCache *ChargeStateCacheClient
 	// Grant is the client for interacting with the Grant builders.
 	Grant *GrantClient
+	// PowerMetric is the client for interacting with the PowerMetric builders.
+	PowerMetric *PowerMetricClient
 
 	// lazily loaded.
 	client     *Client
@@ -145,7 +153,11 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.ChargeCommandHistory = NewChargeCommandHistoryClient(tx.config)
+	tx.ChargeSetting = NewChargeSettingClient(tx.config)
+	tx.ChargeStateCache = NewChargeStateCacheClient(tx.config)
 	tx.Grant = NewGrantClient(tx.config)
+	tx.PowerMetric = NewPowerMetricClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -155,7 +167,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Grant.QueryXXX(), the query will be executed
+// applies a query, for example: ChargeCommandHistory.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

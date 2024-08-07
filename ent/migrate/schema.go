@@ -8,6 +8,61 @@ import (
 )
 
 var (
+	// ChargeCommandHistoriesColumns holds the columns for the "charge_command_histories" table.
+	ChargeCommandHistoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "vin", Type: field.TypeString},
+		{Name: "operation", Type: field.TypeString},
+		{Name: "amps", Type: field.TypeInt},
+		{Name: "timestamp", Type: field.TypeTime},
+	}
+	// ChargeCommandHistoriesTable holds the schema information for the "charge_command_histories" table.
+	ChargeCommandHistoriesTable = &schema.Table{
+		Name:       "charge_command_histories",
+		Columns:    ChargeCommandHistoriesColumns,
+		PrimaryKey: []*schema.Column{ChargeCommandHistoriesColumns[0]},
+	}
+	// ChargeSettingsColumns holds the columns for the "charge_settings" table.
+	ChargeSettingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "enabled", Type: field.TypeBool, Default: false},
+		{Name: "charge_start_threshold", Type: field.TypeInt},
+		{Name: "power_usage_increase_threshold", Type: field.TypeInt},
+		{Name: "power_usage_decrease_threshold", Type: field.TypeInt},
+		{Name: "update_interval", Type: field.TypeInt},
+	}
+	// ChargeSettingsTable holds the schema information for the "charge_settings" table.
+	ChargeSettingsTable = &schema.Table{
+		Name:       "charge_settings",
+		Columns:    ChargeSettingsColumns,
+		PrimaryKey: []*schema.Column{ChargeSettingsColumns[0]},
+	}
+	// ChargeStateCachesColumns holds the columns for the "charge_state_caches" table.
+	ChargeStateCachesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "vin", Type: field.TypeString, Unique: true},
+		{Name: "battery_level", Type: field.TypeInt},
+		{Name: "battery_range", Type: field.TypeFloat32},
+		{Name: "charge_amps", Type: field.TypeInt},
+		{Name: "charge_current_request", Type: field.TypeInt},
+		{Name: "charge_current_request_max", Type: field.TypeInt},
+		{Name: "charge_enable_request", Type: field.TypeBool},
+		{Name: "charge_limit_soc", Type: field.TypeInt},
+		{Name: "charge_port_door_open", Type: field.TypeBool},
+		{Name: "charge_port_latch", Type: field.TypeString},
+		{Name: "charger_actual_current", Type: field.TypeInt},
+		{Name: "charger_voltage", Type: field.TypeInt},
+		{Name: "charging_state", Type: field.TypeString},
+		{Name: "minutes_to_full_charge", Type: field.TypeInt},
+		{Name: "timestamp", Type: field.TypeTime},
+		{Name: "usable_battery_level", Type: field.TypeInt},
+	}
+	// ChargeStateCachesTable holds the schema information for the "charge_state_caches" table.
+	ChargeStateCachesTable = &schema.Table{
+		Name:       "charge_state_caches",
+		Columns:    ChargeStateCachesColumns,
+		PrimaryKey: []*schema.Column{ChargeStateCachesColumns[0]},
+	}
 	// GrantsColumns holds the columns for the "grants" table.
 	GrantsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -23,9 +78,25 @@ var (
 		Columns:    GrantsColumns,
 		PrimaryKey: []*schema.Column{GrantsColumns[0]},
 	}
+	// PowerMetricsColumns holds the columns for the "power_metrics" table.
+	PowerMetricsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "surplus_watt", Type: field.TypeInt},
+		{Name: "timestamp", Type: field.TypeTime},
+	}
+	// PowerMetricsTable holds the schema information for the "power_metrics" table.
+	PowerMetricsTable = &schema.Table{
+		Name:       "power_metrics",
+		Columns:    PowerMetricsColumns,
+		PrimaryKey: []*schema.Column{PowerMetricsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ChargeCommandHistoriesTable,
+		ChargeSettingsTable,
+		ChargeStateCachesTable,
 		GrantsTable,
+		PowerMetricsTable,
 	}
 )
 

@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker/bgcollector"
+
 	"github.com/spf13/cobra"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver"
@@ -17,18 +19,29 @@ import (
 )
 
 func newServeCommand() *cobra.Command {
+	var r driver.ServerRegistry
 	cmd := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the server",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := cmd.Context()
-			r, err := driver.NewServerRegistry(ctx)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			r, err = driver.NewServerRegistry(cmd.Context())
 			if err != nil {
 				return err
 			}
-
-			ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+			return setup(cmd.Context(), r)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
+
+			worker := bgcollector.New(r)
+			go func() {
+				r.Logger().Info("starting worker")
+				if err := worker.Run(ctx); err != nil {
+					r.Logger().Error(err.Error())
+				}
+			}()
 
 			srv := http.Server{
 				Addr:         fmt.Sprintf(":%d", r.ServerConfig().Port),

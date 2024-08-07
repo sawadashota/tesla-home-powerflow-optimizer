@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/morikuni/failure/v2"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
 )
 
@@ -94,6 +95,7 @@ func (c *Client) GetVehicleData(ctx context.Context, vin string) (*model.Vehicle
 		VIN:   v.Response.Vin,
 		State: model.VehicleState(v.Response.State),
 		ChargeState: model.VehicleChargeState{
+			VIN:                     v.Response.Vin,
 			BatteryLevel:            v.Response.ChargeState.BatteryLevel,
 			BatteryRange:            v.Response.ChargeState.BatteryRange,
 			ChargeAmps:              v.Response.ChargeState.ChargeAmps,
@@ -105,13 +107,32 @@ func (c *Client) GetVehicleData(ctx context.Context, vin string) (*model.Vehicle
 			ChargePortLatch:         v.Response.ChargeState.ChargePortLatch,
 			ChargerActualCurrent:    v.Response.ChargeState.ChargerActualCurrent,
 			ChargerVoltage:          v.Response.ChargeState.ChargerVoltage,
-			ChargingState:           v.Response.ChargeState.ChargingState,
+			ChargingState:           model.ChargingState(v.Response.ChargeState.ChargingState),
 			MinutesToFullCharge:     v.Response.ChargeState.MinutesToFullCharge,
-			TimeToFullCharge:        v.Response.ChargeState.TimeToFullCharge,
 			Timestamp:               time.Unix(v.Response.ChargeState.Timestamp, 0),
 			UsableBatteryLevel:      v.Response.ChargeState.UsableBatteryLevel,
 		},
 	}, nil
+}
+
+func (c *Client) WaitUntilWakedUp(ctx context.Context, vin string) (*model.VehicleData, error) {
+	ticker := time.NewTicker(8 * time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ticker.C:
+			c.r.Logger().Info("checking if the vehicle is online", slog.String("vin", vin))
+			data, err := c.GetVehicleData(ctx, vin)
+			if err != nil {
+				if failure.Is(err, model.ErrCodeDeviceOffline) {
+					continue
+				}
+				return nil, err
+			}
+			return data, nil
+		}
+	}
 }
 
 func (c *Client) WakeUp(ctx context.Context, vin string) error {
@@ -141,16 +162,6 @@ func (c *Client) WakeUp(ctx context.Context, vin string) error {
 			}
 			return failure.New(model.ErrCodeInternalServer, failure.Messagef("unexpected status code: %d, response body: %s", resp.StatusCode, string(body)))
 		}
-	}
-
-	// FIXME: delete me
-	var v VehicleResponse
-	if err := json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return err
-	}
-	{
-		b, _ := json.MarshalIndent(v, "", "  ")
-		fmt.Println(string(b))
 	}
 
 	return nil

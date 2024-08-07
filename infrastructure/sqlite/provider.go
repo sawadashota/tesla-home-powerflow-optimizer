@@ -11,8 +11,12 @@ import (
 )
 
 type provider struct {
-	client          *ent.Client
-	grantRepository repository.GrantRepository
+	client                         *ent.Client
+	grantRepository                *grantRepository
+	powerMetricRepository          *powerMetricRepository
+	chargeSettingRepository        *chargeSettingRepository
+	chargeStateCache               *chargeStateCache
+	chargeCommandHistoryRepository *chargeCommandHistoryRepository
 }
 
 var _ repository.Provider = new(provider)
@@ -44,4 +48,32 @@ func (p *provider) GrantRepository() repository.GrantRepository {
 		p.grantRepository = newGrantRepository(p.client)
 	}
 	return p.grantRepository
+}
+
+func (p *provider) PowerMetricRepository() repository.PowerMetricRepository {
+	if p.powerMetricRepository == nil {
+		p.powerMetricRepository = newPowerMetricRepository(p.client)
+	}
+	return p.powerMetricRepository
+}
+
+func (p *provider) ChargeSettingRepository() repository.ChargeSettingRepository {
+	if p.chargeSettingRepository == nil {
+		p.chargeSettingRepository = newChargeSettingRepository(p.client)
+	}
+	return p.chargeSettingRepository
+}
+
+func (p *provider) VehicleChargeStateCache() repository.VehicleChargeStateCache {
+	if p.chargeStateCache == nil {
+		p.chargeStateCache = newChargeStateCache(p.client)
+	}
+	return p.chargeStateCache
+}
+
+func (p *provider) ChargeCommandHistoryRepository() repository.ChargeCommandHistoryRepository {
+	if p.chargeCommandHistoryRepository == nil {
+		p.chargeCommandHistoryRepository = newChargeCommandHistoryRepository(p.client)
+	}
+	return p.chargeCommandHistoryRepository
 }

@@ -36,9 +36,10 @@ generate-sdk: tsp ## Generate SDK
 	$(OAPI_CODEGEN) -config .oapi-codegen.yaml $(API_SPEC)
 	make fmt
 
-.PHONY: ent-generate
-ent-generate: ## Generate ent code
+.PHONY: generate-ent
+generate-ent: ## Generate ent code
 	go generate ./ent
+	make fmt
 
 # https://gist.github.com/tadashi-aikawa/da73d277a3c1ec6767ed48d1335900f3
 .PHONY: $(shell grep -h -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')

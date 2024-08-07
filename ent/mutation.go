@@ -12,7 +12,11 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargecommandhistory"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargesetting"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargestatecache"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/grant"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/powermetric"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/predicate"
 )
 
@@ -25,8 +29,2682 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeGrant = "Grant"
+	TypeChargeCommandHistory = "ChargeCommandHistory"
+	TypeChargeSetting        = "ChargeSetting"
+	TypeChargeStateCache     = "ChargeStateCache"
+	TypeGrant                = "Grant"
+	TypePowerMetric          = "PowerMetric"
 )
+
+// ChargeCommandHistoryMutation represents an operation that mutates the ChargeCommandHistory nodes in the graph.
+type ChargeCommandHistoryMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	vin           *string
+	operation     *string
+	amps          *int
+	addamps       *int
+	timestamp     *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*ChargeCommandHistory, error)
+	predicates    []predicate.ChargeCommandHistory
+}
+
+var _ ent.Mutation = (*ChargeCommandHistoryMutation)(nil)
+
+// chargecommandhistoryOption allows management of the mutation configuration using functional options.
+type chargecommandhistoryOption func(*ChargeCommandHistoryMutation)
+
+// newChargeCommandHistoryMutation creates new mutation for the ChargeCommandHistory entity.
+func newChargeCommandHistoryMutation(c config, op Op, opts ...chargecommandhistoryOption) *ChargeCommandHistoryMutation {
+	m := &ChargeCommandHistoryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeChargeCommandHistory,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withChargeCommandHistoryID sets the ID field of the mutation.
+func withChargeCommandHistoryID(id int) chargecommandhistoryOption {
+	return func(m *ChargeCommandHistoryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ChargeCommandHistory
+		)
+		m.oldValue = func(ctx context.Context) (*ChargeCommandHistory, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ChargeCommandHistory.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withChargeCommandHistory sets the old ChargeCommandHistory of the mutation.
+func withChargeCommandHistory(node *ChargeCommandHistory) chargecommandhistoryOption {
+	return func(m *ChargeCommandHistoryMutation) {
+		m.oldValue = func(context.Context) (*ChargeCommandHistory, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ChargeCommandHistoryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ChargeCommandHistoryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ChargeCommandHistoryMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ChargeCommandHistoryMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ChargeCommandHistory.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetVin sets the "vin" field.
+func (m *ChargeCommandHistoryMutation) SetVin(s string) {
+	m.vin = &s
+}
+
+// Vin returns the value of the "vin" field in the mutation.
+func (m *ChargeCommandHistoryMutation) Vin() (r string, exists bool) {
+	v := m.vin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVin returns the old "vin" field's value of the ChargeCommandHistory entity.
+// If the ChargeCommandHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeCommandHistoryMutation) OldVin(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVin: %w", err)
+	}
+	return oldValue.Vin, nil
+}
+
+// ResetVin resets all changes to the "vin" field.
+func (m *ChargeCommandHistoryMutation) ResetVin() {
+	m.vin = nil
+}
+
+// SetOperation sets the "operation" field.
+func (m *ChargeCommandHistoryMutation) SetOperation(s string) {
+	m.operation = &s
+}
+
+// Operation returns the value of the "operation" field in the mutation.
+func (m *ChargeCommandHistoryMutation) Operation() (r string, exists bool) {
+	v := m.operation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOperation returns the old "operation" field's value of the ChargeCommandHistory entity.
+// If the ChargeCommandHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeCommandHistoryMutation) OldOperation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOperation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOperation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOperation: %w", err)
+	}
+	return oldValue.Operation, nil
+}
+
+// ResetOperation resets all changes to the "operation" field.
+func (m *ChargeCommandHistoryMutation) ResetOperation() {
+	m.operation = nil
+}
+
+// SetAmps sets the "amps" field.
+func (m *ChargeCommandHistoryMutation) SetAmps(i int) {
+	m.amps = &i
+	m.addamps = nil
+}
+
+// Amps returns the value of the "amps" field in the mutation.
+func (m *ChargeCommandHistoryMutation) Amps() (r int, exists bool) {
+	v := m.amps
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmps returns the old "amps" field's value of the ChargeCommandHistory entity.
+// If the ChargeCommandHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeCommandHistoryMutation) OldAmps(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmps is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmps requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmps: %w", err)
+	}
+	return oldValue.Amps, nil
+}
+
+// AddAmps adds i to the "amps" field.
+func (m *ChargeCommandHistoryMutation) AddAmps(i int) {
+	if m.addamps != nil {
+		*m.addamps += i
+	} else {
+		m.addamps = &i
+	}
+}
+
+// AddedAmps returns the value that was added to the "amps" field in this mutation.
+func (m *ChargeCommandHistoryMutation) AddedAmps() (r int, exists bool) {
+	v := m.addamps
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAmps resets all changes to the "amps" field.
+func (m *ChargeCommandHistoryMutation) ResetAmps() {
+	m.amps = nil
+	m.addamps = nil
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (m *ChargeCommandHistoryMutation) SetTimestamp(t time.Time) {
+	m.timestamp = &t
+}
+
+// Timestamp returns the value of the "timestamp" field in the mutation.
+func (m *ChargeCommandHistoryMutation) Timestamp() (r time.Time, exists bool) {
+	v := m.timestamp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimestamp returns the old "timestamp" field's value of the ChargeCommandHistory entity.
+// If the ChargeCommandHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeCommandHistoryMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+	}
+	return oldValue.Timestamp, nil
+}
+
+// ResetTimestamp resets all changes to the "timestamp" field.
+func (m *ChargeCommandHistoryMutation) ResetTimestamp() {
+	m.timestamp = nil
+}
+
+// Where appends a list predicates to the ChargeCommandHistoryMutation builder.
+func (m *ChargeCommandHistoryMutation) Where(ps ...predicate.ChargeCommandHistory) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ChargeCommandHistoryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ChargeCommandHistoryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ChargeCommandHistory, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ChargeCommandHistoryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ChargeCommandHistoryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ChargeCommandHistory).
+func (m *ChargeCommandHistoryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ChargeCommandHistoryMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.vin != nil {
+		fields = append(fields, chargecommandhistory.FieldVin)
+	}
+	if m.operation != nil {
+		fields = append(fields, chargecommandhistory.FieldOperation)
+	}
+	if m.amps != nil {
+		fields = append(fields, chargecommandhistory.FieldAmps)
+	}
+	if m.timestamp != nil {
+		fields = append(fields, chargecommandhistory.FieldTimestamp)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ChargeCommandHistoryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case chargecommandhistory.FieldVin:
+		return m.Vin()
+	case chargecommandhistory.FieldOperation:
+		return m.Operation()
+	case chargecommandhistory.FieldAmps:
+		return m.Amps()
+	case chargecommandhistory.FieldTimestamp:
+		return m.Timestamp()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ChargeCommandHistoryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case chargecommandhistory.FieldVin:
+		return m.OldVin(ctx)
+	case chargecommandhistory.FieldOperation:
+		return m.OldOperation(ctx)
+	case chargecommandhistory.FieldAmps:
+		return m.OldAmps(ctx)
+	case chargecommandhistory.FieldTimestamp:
+		return m.OldTimestamp(ctx)
+	}
+	return nil, fmt.Errorf("unknown ChargeCommandHistory field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeCommandHistoryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case chargecommandhistory.FieldVin:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVin(v)
+		return nil
+	case chargecommandhistory.FieldOperation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOperation(v)
+		return nil
+	case chargecommandhistory.FieldAmps:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmps(v)
+		return nil
+	case chargecommandhistory.FieldTimestamp:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimestamp(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeCommandHistory field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ChargeCommandHistoryMutation) AddedFields() []string {
+	var fields []string
+	if m.addamps != nil {
+		fields = append(fields, chargecommandhistory.FieldAmps)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ChargeCommandHistoryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case chargecommandhistory.FieldAmps:
+		return m.AddedAmps()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeCommandHistoryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case chargecommandhistory.FieldAmps:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAmps(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeCommandHistory numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ChargeCommandHistoryMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ChargeCommandHistoryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ChargeCommandHistoryMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ChargeCommandHistory nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ChargeCommandHistoryMutation) ResetField(name string) error {
+	switch name {
+	case chargecommandhistory.FieldVin:
+		m.ResetVin()
+		return nil
+	case chargecommandhistory.FieldOperation:
+		m.ResetOperation()
+		return nil
+	case chargecommandhistory.FieldAmps:
+		m.ResetAmps()
+		return nil
+	case chargecommandhistory.FieldTimestamp:
+		m.ResetTimestamp()
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeCommandHistory field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ChargeCommandHistoryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ChargeCommandHistoryMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ChargeCommandHistoryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ChargeCommandHistoryMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ChargeCommandHistoryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ChargeCommandHistoryMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ChargeCommandHistoryMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ChargeCommandHistory unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ChargeCommandHistoryMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ChargeCommandHistory edge %s", name)
+}
+
+// ChargeSettingMutation represents an operation that mutates the ChargeSetting nodes in the graph.
+type ChargeSettingMutation struct {
+	config
+	op                                Op
+	typ                               string
+	id                                *int
+	enabled                           *bool
+	charge_start_threshold            *int
+	addcharge_start_threshold         *int
+	power_usage_increase_threshold    *int
+	addpower_usage_increase_threshold *int
+	power_usage_decrease_threshold    *int
+	addpower_usage_decrease_threshold *int
+	update_interval                   *int
+	addupdate_interval                *int
+	clearedFields                     map[string]struct{}
+	done                              bool
+	oldValue                          func(context.Context) (*ChargeSetting, error)
+	predicates                        []predicate.ChargeSetting
+}
+
+var _ ent.Mutation = (*ChargeSettingMutation)(nil)
+
+// chargesettingOption allows management of the mutation configuration using functional options.
+type chargesettingOption func(*ChargeSettingMutation)
+
+// newChargeSettingMutation creates new mutation for the ChargeSetting entity.
+func newChargeSettingMutation(c config, op Op, opts ...chargesettingOption) *ChargeSettingMutation {
+	m := &ChargeSettingMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeChargeSetting,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withChargeSettingID sets the ID field of the mutation.
+func withChargeSettingID(id int) chargesettingOption {
+	return func(m *ChargeSettingMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ChargeSetting
+		)
+		m.oldValue = func(ctx context.Context) (*ChargeSetting, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ChargeSetting.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withChargeSetting sets the old ChargeSetting of the mutation.
+func withChargeSetting(node *ChargeSetting) chargesettingOption {
+	return func(m *ChargeSettingMutation) {
+		m.oldValue = func(context.Context) (*ChargeSetting, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ChargeSettingMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ChargeSettingMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ChargeSettingMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ChargeSettingMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ChargeSetting.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetEnabled sets the "enabled" field.
+func (m *ChargeSettingMutation) SetEnabled(b bool) {
+	m.enabled = &b
+}
+
+// Enabled returns the value of the "enabled" field in the mutation.
+func (m *ChargeSettingMutation) Enabled() (r bool, exists bool) {
+	v := m.enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnabled returns the old "enabled" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnabled: %w", err)
+	}
+	return oldValue.Enabled, nil
+}
+
+// ResetEnabled resets all changes to the "enabled" field.
+func (m *ChargeSettingMutation) ResetEnabled() {
+	m.enabled = nil
+}
+
+// SetChargeStartThreshold sets the "charge_start_threshold" field.
+func (m *ChargeSettingMutation) SetChargeStartThreshold(i int) {
+	m.charge_start_threshold = &i
+	m.addcharge_start_threshold = nil
+}
+
+// ChargeStartThreshold returns the value of the "charge_start_threshold" field in the mutation.
+func (m *ChargeSettingMutation) ChargeStartThreshold() (r int, exists bool) {
+	v := m.charge_start_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeStartThreshold returns the old "charge_start_threshold" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldChargeStartThreshold(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeStartThreshold is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeStartThreshold requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeStartThreshold: %w", err)
+	}
+	return oldValue.ChargeStartThreshold, nil
+}
+
+// AddChargeStartThreshold adds i to the "charge_start_threshold" field.
+func (m *ChargeSettingMutation) AddChargeStartThreshold(i int) {
+	if m.addcharge_start_threshold != nil {
+		*m.addcharge_start_threshold += i
+	} else {
+		m.addcharge_start_threshold = &i
+	}
+}
+
+// AddedChargeStartThreshold returns the value that was added to the "charge_start_threshold" field in this mutation.
+func (m *ChargeSettingMutation) AddedChargeStartThreshold() (r int, exists bool) {
+	v := m.addcharge_start_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargeStartThreshold resets all changes to the "charge_start_threshold" field.
+func (m *ChargeSettingMutation) ResetChargeStartThreshold() {
+	m.charge_start_threshold = nil
+	m.addcharge_start_threshold = nil
+}
+
+// SetPowerUsageIncreaseThreshold sets the "power_usage_increase_threshold" field.
+func (m *ChargeSettingMutation) SetPowerUsageIncreaseThreshold(i int) {
+	m.power_usage_increase_threshold = &i
+	m.addpower_usage_increase_threshold = nil
+}
+
+// PowerUsageIncreaseThreshold returns the value of the "power_usage_increase_threshold" field in the mutation.
+func (m *ChargeSettingMutation) PowerUsageIncreaseThreshold() (r int, exists bool) {
+	v := m.power_usage_increase_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPowerUsageIncreaseThreshold returns the old "power_usage_increase_threshold" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldPowerUsageIncreaseThreshold(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPowerUsageIncreaseThreshold is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPowerUsageIncreaseThreshold requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPowerUsageIncreaseThreshold: %w", err)
+	}
+	return oldValue.PowerUsageIncreaseThreshold, nil
+}
+
+// AddPowerUsageIncreaseThreshold adds i to the "power_usage_increase_threshold" field.
+func (m *ChargeSettingMutation) AddPowerUsageIncreaseThreshold(i int) {
+	if m.addpower_usage_increase_threshold != nil {
+		*m.addpower_usage_increase_threshold += i
+	} else {
+		m.addpower_usage_increase_threshold = &i
+	}
+}
+
+// AddedPowerUsageIncreaseThreshold returns the value that was added to the "power_usage_increase_threshold" field in this mutation.
+func (m *ChargeSettingMutation) AddedPowerUsageIncreaseThreshold() (r int, exists bool) {
+	v := m.addpower_usage_increase_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPowerUsageIncreaseThreshold resets all changes to the "power_usage_increase_threshold" field.
+func (m *ChargeSettingMutation) ResetPowerUsageIncreaseThreshold() {
+	m.power_usage_increase_threshold = nil
+	m.addpower_usage_increase_threshold = nil
+}
+
+// SetPowerUsageDecreaseThreshold sets the "power_usage_decrease_threshold" field.
+func (m *ChargeSettingMutation) SetPowerUsageDecreaseThreshold(i int) {
+	m.power_usage_decrease_threshold = &i
+	m.addpower_usage_decrease_threshold = nil
+}
+
+// PowerUsageDecreaseThreshold returns the value of the "power_usage_decrease_threshold" field in the mutation.
+func (m *ChargeSettingMutation) PowerUsageDecreaseThreshold() (r int, exists bool) {
+	v := m.power_usage_decrease_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPowerUsageDecreaseThreshold returns the old "power_usage_decrease_threshold" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldPowerUsageDecreaseThreshold(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPowerUsageDecreaseThreshold is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPowerUsageDecreaseThreshold requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPowerUsageDecreaseThreshold: %w", err)
+	}
+	return oldValue.PowerUsageDecreaseThreshold, nil
+}
+
+// AddPowerUsageDecreaseThreshold adds i to the "power_usage_decrease_threshold" field.
+func (m *ChargeSettingMutation) AddPowerUsageDecreaseThreshold(i int) {
+	if m.addpower_usage_decrease_threshold != nil {
+		*m.addpower_usage_decrease_threshold += i
+	} else {
+		m.addpower_usage_decrease_threshold = &i
+	}
+}
+
+// AddedPowerUsageDecreaseThreshold returns the value that was added to the "power_usage_decrease_threshold" field in this mutation.
+func (m *ChargeSettingMutation) AddedPowerUsageDecreaseThreshold() (r int, exists bool) {
+	v := m.addpower_usage_decrease_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPowerUsageDecreaseThreshold resets all changes to the "power_usage_decrease_threshold" field.
+func (m *ChargeSettingMutation) ResetPowerUsageDecreaseThreshold() {
+	m.power_usage_decrease_threshold = nil
+	m.addpower_usage_decrease_threshold = nil
+}
+
+// SetUpdateInterval sets the "update_interval" field.
+func (m *ChargeSettingMutation) SetUpdateInterval(i int) {
+	m.update_interval = &i
+	m.addupdate_interval = nil
+}
+
+// UpdateInterval returns the value of the "update_interval" field in the mutation.
+func (m *ChargeSettingMutation) UpdateInterval() (r int, exists bool) {
+	v := m.update_interval
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateInterval returns the old "update_interval" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldUpdateInterval(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateInterval is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateInterval requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateInterval: %w", err)
+	}
+	return oldValue.UpdateInterval, nil
+}
+
+// AddUpdateInterval adds i to the "update_interval" field.
+func (m *ChargeSettingMutation) AddUpdateInterval(i int) {
+	if m.addupdate_interval != nil {
+		*m.addupdate_interval += i
+	} else {
+		m.addupdate_interval = &i
+	}
+}
+
+// AddedUpdateInterval returns the value that was added to the "update_interval" field in this mutation.
+func (m *ChargeSettingMutation) AddedUpdateInterval() (r int, exists bool) {
+	v := m.addupdate_interval
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdateInterval resets all changes to the "update_interval" field.
+func (m *ChargeSettingMutation) ResetUpdateInterval() {
+	m.update_interval = nil
+	m.addupdate_interval = nil
+}
+
+// Where appends a list predicates to the ChargeSettingMutation builder.
+func (m *ChargeSettingMutation) Where(ps ...predicate.ChargeSetting) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ChargeSettingMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ChargeSettingMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ChargeSetting, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ChargeSettingMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ChargeSettingMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ChargeSetting).
+func (m *ChargeSettingMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ChargeSettingMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.enabled != nil {
+		fields = append(fields, chargesetting.FieldEnabled)
+	}
+	if m.charge_start_threshold != nil {
+		fields = append(fields, chargesetting.FieldChargeStartThreshold)
+	}
+	if m.power_usage_increase_threshold != nil {
+		fields = append(fields, chargesetting.FieldPowerUsageIncreaseThreshold)
+	}
+	if m.power_usage_decrease_threshold != nil {
+		fields = append(fields, chargesetting.FieldPowerUsageDecreaseThreshold)
+	}
+	if m.update_interval != nil {
+		fields = append(fields, chargesetting.FieldUpdateInterval)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ChargeSettingMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case chargesetting.FieldEnabled:
+		return m.Enabled()
+	case chargesetting.FieldChargeStartThreshold:
+		return m.ChargeStartThreshold()
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		return m.PowerUsageIncreaseThreshold()
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		return m.PowerUsageDecreaseThreshold()
+	case chargesetting.FieldUpdateInterval:
+		return m.UpdateInterval()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ChargeSettingMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case chargesetting.FieldEnabled:
+		return m.OldEnabled(ctx)
+	case chargesetting.FieldChargeStartThreshold:
+		return m.OldChargeStartThreshold(ctx)
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		return m.OldPowerUsageIncreaseThreshold(ctx)
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		return m.OldPowerUsageDecreaseThreshold(ctx)
+	case chargesetting.FieldUpdateInterval:
+		return m.OldUpdateInterval(ctx)
+	}
+	return nil, fmt.Errorf("unknown ChargeSetting field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeSettingMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case chargesetting.FieldEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnabled(v)
+		return nil
+	case chargesetting.FieldChargeStartThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeStartThreshold(v)
+		return nil
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPowerUsageIncreaseThreshold(v)
+		return nil
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPowerUsageDecreaseThreshold(v)
+		return nil
+	case chargesetting.FieldUpdateInterval:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateInterval(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeSetting field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ChargeSettingMutation) AddedFields() []string {
+	var fields []string
+	if m.addcharge_start_threshold != nil {
+		fields = append(fields, chargesetting.FieldChargeStartThreshold)
+	}
+	if m.addpower_usage_increase_threshold != nil {
+		fields = append(fields, chargesetting.FieldPowerUsageIncreaseThreshold)
+	}
+	if m.addpower_usage_decrease_threshold != nil {
+		fields = append(fields, chargesetting.FieldPowerUsageDecreaseThreshold)
+	}
+	if m.addupdate_interval != nil {
+		fields = append(fields, chargesetting.FieldUpdateInterval)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ChargeSettingMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case chargesetting.FieldChargeStartThreshold:
+		return m.AddedChargeStartThreshold()
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		return m.AddedPowerUsageIncreaseThreshold()
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		return m.AddedPowerUsageDecreaseThreshold()
+	case chargesetting.FieldUpdateInterval:
+		return m.AddedUpdateInterval()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeSettingMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case chargesetting.FieldChargeStartThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargeStartThreshold(v)
+		return nil
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPowerUsageIncreaseThreshold(v)
+		return nil
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPowerUsageDecreaseThreshold(v)
+		return nil
+	case chargesetting.FieldUpdateInterval:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdateInterval(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeSetting numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ChargeSettingMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ChargeSettingMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ChargeSettingMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ChargeSetting nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ChargeSettingMutation) ResetField(name string) error {
+	switch name {
+	case chargesetting.FieldEnabled:
+		m.ResetEnabled()
+		return nil
+	case chargesetting.FieldChargeStartThreshold:
+		m.ResetChargeStartThreshold()
+		return nil
+	case chargesetting.FieldPowerUsageIncreaseThreshold:
+		m.ResetPowerUsageIncreaseThreshold()
+		return nil
+	case chargesetting.FieldPowerUsageDecreaseThreshold:
+		m.ResetPowerUsageDecreaseThreshold()
+		return nil
+	case chargesetting.FieldUpdateInterval:
+		m.ResetUpdateInterval()
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeSetting field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ChargeSettingMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ChargeSettingMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ChargeSettingMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ChargeSettingMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ChargeSettingMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ChargeSettingMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ChargeSettingMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ChargeSetting unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ChargeSettingMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ChargeSetting edge %s", name)
+}
+
+// ChargeStateCacheMutation represents an operation that mutates the ChargeStateCache nodes in the graph.
+type ChargeStateCacheMutation struct {
+	config
+	op                            Op
+	typ                           string
+	id                            *int
+	vin                           *string
+	battery_level                 *int
+	addbattery_level              *int
+	battery_range                 *float32
+	addbattery_range              *float32
+	charge_amps                   *int
+	addcharge_amps                *int
+	charge_current_request        *int
+	addcharge_current_request     *int
+	charge_current_request_max    *int
+	addcharge_current_request_max *int
+	charge_enable_request         *bool
+	charge_limit_soc              *int
+	addcharge_limit_soc           *int
+	charge_port_door_open         *bool
+	charge_port_latch             *string
+	charger_actual_current        *int
+	addcharger_actual_current     *int
+	charger_voltage               *int
+	addcharger_voltage            *int
+	charging_state                *string
+	minutes_to_full_charge        *int
+	addminutes_to_full_charge     *int
+	timestamp                     *time.Time
+	usable_battery_level          *int
+	addusable_battery_level       *int
+	clearedFields                 map[string]struct{}
+	done                          bool
+	oldValue                      func(context.Context) (*ChargeStateCache, error)
+	predicates                    []predicate.ChargeStateCache
+}
+
+var _ ent.Mutation = (*ChargeStateCacheMutation)(nil)
+
+// chargestatecacheOption allows management of the mutation configuration using functional options.
+type chargestatecacheOption func(*ChargeStateCacheMutation)
+
+// newChargeStateCacheMutation creates new mutation for the ChargeStateCache entity.
+func newChargeStateCacheMutation(c config, op Op, opts ...chargestatecacheOption) *ChargeStateCacheMutation {
+	m := &ChargeStateCacheMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeChargeStateCache,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withChargeStateCacheID sets the ID field of the mutation.
+func withChargeStateCacheID(id int) chargestatecacheOption {
+	return func(m *ChargeStateCacheMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ChargeStateCache
+		)
+		m.oldValue = func(ctx context.Context) (*ChargeStateCache, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ChargeStateCache.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withChargeStateCache sets the old ChargeStateCache of the mutation.
+func withChargeStateCache(node *ChargeStateCache) chargestatecacheOption {
+	return func(m *ChargeStateCacheMutation) {
+		m.oldValue = func(context.Context) (*ChargeStateCache, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ChargeStateCacheMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ChargeStateCacheMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ChargeStateCacheMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ChargeStateCacheMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ChargeStateCache.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetVin sets the "vin" field.
+func (m *ChargeStateCacheMutation) SetVin(s string) {
+	m.vin = &s
+}
+
+// Vin returns the value of the "vin" field in the mutation.
+func (m *ChargeStateCacheMutation) Vin() (r string, exists bool) {
+	v := m.vin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVin returns the old "vin" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldVin(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVin: %w", err)
+	}
+	return oldValue.Vin, nil
+}
+
+// ResetVin resets all changes to the "vin" field.
+func (m *ChargeStateCacheMutation) ResetVin() {
+	m.vin = nil
+}
+
+// SetBatteryLevel sets the "battery_level" field.
+func (m *ChargeStateCacheMutation) SetBatteryLevel(i int) {
+	m.battery_level = &i
+	m.addbattery_level = nil
+}
+
+// BatteryLevel returns the value of the "battery_level" field in the mutation.
+func (m *ChargeStateCacheMutation) BatteryLevel() (r int, exists bool) {
+	v := m.battery_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryLevel returns the old "battery_level" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldBatteryLevel(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryLevel: %w", err)
+	}
+	return oldValue.BatteryLevel, nil
+}
+
+// AddBatteryLevel adds i to the "battery_level" field.
+func (m *ChargeStateCacheMutation) AddBatteryLevel(i int) {
+	if m.addbattery_level != nil {
+		*m.addbattery_level += i
+	} else {
+		m.addbattery_level = &i
+	}
+}
+
+// AddedBatteryLevel returns the value that was added to the "battery_level" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedBatteryLevel() (r int, exists bool) {
+	v := m.addbattery_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatteryLevel resets all changes to the "battery_level" field.
+func (m *ChargeStateCacheMutation) ResetBatteryLevel() {
+	m.battery_level = nil
+	m.addbattery_level = nil
+}
+
+// SetBatteryRange sets the "battery_range" field.
+func (m *ChargeStateCacheMutation) SetBatteryRange(f float32) {
+	m.battery_range = &f
+	m.addbattery_range = nil
+}
+
+// BatteryRange returns the value of the "battery_range" field in the mutation.
+func (m *ChargeStateCacheMutation) BatteryRange() (r float32, exists bool) {
+	v := m.battery_range
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryRange returns the old "battery_range" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldBatteryRange(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryRange is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryRange requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryRange: %w", err)
+	}
+	return oldValue.BatteryRange, nil
+}
+
+// AddBatteryRange adds f to the "battery_range" field.
+func (m *ChargeStateCacheMutation) AddBatteryRange(f float32) {
+	if m.addbattery_range != nil {
+		*m.addbattery_range += f
+	} else {
+		m.addbattery_range = &f
+	}
+}
+
+// AddedBatteryRange returns the value that was added to the "battery_range" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedBatteryRange() (r float32, exists bool) {
+	v := m.addbattery_range
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatteryRange resets all changes to the "battery_range" field.
+func (m *ChargeStateCacheMutation) ResetBatteryRange() {
+	m.battery_range = nil
+	m.addbattery_range = nil
+}
+
+// SetChargeAmps sets the "charge_amps" field.
+func (m *ChargeStateCacheMutation) SetChargeAmps(i int) {
+	m.charge_amps = &i
+	m.addcharge_amps = nil
+}
+
+// ChargeAmps returns the value of the "charge_amps" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargeAmps() (r int, exists bool) {
+	v := m.charge_amps
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeAmps returns the old "charge_amps" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargeAmps(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeAmps is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeAmps requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeAmps: %w", err)
+	}
+	return oldValue.ChargeAmps, nil
+}
+
+// AddChargeAmps adds i to the "charge_amps" field.
+func (m *ChargeStateCacheMutation) AddChargeAmps(i int) {
+	if m.addcharge_amps != nil {
+		*m.addcharge_amps += i
+	} else {
+		m.addcharge_amps = &i
+	}
+}
+
+// AddedChargeAmps returns the value that was added to the "charge_amps" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargeAmps() (r int, exists bool) {
+	v := m.addcharge_amps
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargeAmps resets all changes to the "charge_amps" field.
+func (m *ChargeStateCacheMutation) ResetChargeAmps() {
+	m.charge_amps = nil
+	m.addcharge_amps = nil
+}
+
+// SetChargeCurrentRequest sets the "charge_current_request" field.
+func (m *ChargeStateCacheMutation) SetChargeCurrentRequest(i int) {
+	m.charge_current_request = &i
+	m.addcharge_current_request = nil
+}
+
+// ChargeCurrentRequest returns the value of the "charge_current_request" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargeCurrentRequest() (r int, exists bool) {
+	v := m.charge_current_request
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeCurrentRequest returns the old "charge_current_request" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargeCurrentRequest(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeCurrentRequest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeCurrentRequest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeCurrentRequest: %w", err)
+	}
+	return oldValue.ChargeCurrentRequest, nil
+}
+
+// AddChargeCurrentRequest adds i to the "charge_current_request" field.
+func (m *ChargeStateCacheMutation) AddChargeCurrentRequest(i int) {
+	if m.addcharge_current_request != nil {
+		*m.addcharge_current_request += i
+	} else {
+		m.addcharge_current_request = &i
+	}
+}
+
+// AddedChargeCurrentRequest returns the value that was added to the "charge_current_request" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargeCurrentRequest() (r int, exists bool) {
+	v := m.addcharge_current_request
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargeCurrentRequest resets all changes to the "charge_current_request" field.
+func (m *ChargeStateCacheMutation) ResetChargeCurrentRequest() {
+	m.charge_current_request = nil
+	m.addcharge_current_request = nil
+}
+
+// SetChargeCurrentRequestMax sets the "charge_current_request_max" field.
+func (m *ChargeStateCacheMutation) SetChargeCurrentRequestMax(i int) {
+	m.charge_current_request_max = &i
+	m.addcharge_current_request_max = nil
+}
+
+// ChargeCurrentRequestMax returns the value of the "charge_current_request_max" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargeCurrentRequestMax() (r int, exists bool) {
+	v := m.charge_current_request_max
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeCurrentRequestMax returns the old "charge_current_request_max" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargeCurrentRequestMax(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeCurrentRequestMax is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeCurrentRequestMax requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeCurrentRequestMax: %w", err)
+	}
+	return oldValue.ChargeCurrentRequestMax, nil
+}
+
+// AddChargeCurrentRequestMax adds i to the "charge_current_request_max" field.
+func (m *ChargeStateCacheMutation) AddChargeCurrentRequestMax(i int) {
+	if m.addcharge_current_request_max != nil {
+		*m.addcharge_current_request_max += i
+	} else {
+		m.addcharge_current_request_max = &i
+	}
+}
+
+// AddedChargeCurrentRequestMax returns the value that was added to the "charge_current_request_max" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargeCurrentRequestMax() (r int, exists bool) {
+	v := m.addcharge_current_request_max
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargeCurrentRequestMax resets all changes to the "charge_current_request_max" field.
+func (m *ChargeStateCacheMutation) ResetChargeCurrentRequestMax() {
+	m.charge_current_request_max = nil
+	m.addcharge_current_request_max = nil
+}
+
+// SetChargeEnableRequest sets the "charge_enable_request" field.
+func (m *ChargeStateCacheMutation) SetChargeEnableRequest(b bool) {
+	m.charge_enable_request = &b
+}
+
+// ChargeEnableRequest returns the value of the "charge_enable_request" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargeEnableRequest() (r bool, exists bool) {
+	v := m.charge_enable_request
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeEnableRequest returns the old "charge_enable_request" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargeEnableRequest(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeEnableRequest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeEnableRequest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeEnableRequest: %w", err)
+	}
+	return oldValue.ChargeEnableRequest, nil
+}
+
+// ResetChargeEnableRequest resets all changes to the "charge_enable_request" field.
+func (m *ChargeStateCacheMutation) ResetChargeEnableRequest() {
+	m.charge_enable_request = nil
+}
+
+// SetChargeLimitSoc sets the "charge_limit_soc" field.
+func (m *ChargeStateCacheMutation) SetChargeLimitSoc(i int) {
+	m.charge_limit_soc = &i
+	m.addcharge_limit_soc = nil
+}
+
+// ChargeLimitSoc returns the value of the "charge_limit_soc" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargeLimitSoc() (r int, exists bool) {
+	v := m.charge_limit_soc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargeLimitSoc returns the old "charge_limit_soc" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargeLimitSoc(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargeLimitSoc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargeLimitSoc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargeLimitSoc: %w", err)
+	}
+	return oldValue.ChargeLimitSoc, nil
+}
+
+// AddChargeLimitSoc adds i to the "charge_limit_soc" field.
+func (m *ChargeStateCacheMutation) AddChargeLimitSoc(i int) {
+	if m.addcharge_limit_soc != nil {
+		*m.addcharge_limit_soc += i
+	} else {
+		m.addcharge_limit_soc = &i
+	}
+}
+
+// AddedChargeLimitSoc returns the value that was added to the "charge_limit_soc" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargeLimitSoc() (r int, exists bool) {
+	v := m.addcharge_limit_soc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargeLimitSoc resets all changes to the "charge_limit_soc" field.
+func (m *ChargeStateCacheMutation) ResetChargeLimitSoc() {
+	m.charge_limit_soc = nil
+	m.addcharge_limit_soc = nil
+}
+
+// SetChargePortDoorOpen sets the "charge_port_door_open" field.
+func (m *ChargeStateCacheMutation) SetChargePortDoorOpen(b bool) {
+	m.charge_port_door_open = &b
+}
+
+// ChargePortDoorOpen returns the value of the "charge_port_door_open" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargePortDoorOpen() (r bool, exists bool) {
+	v := m.charge_port_door_open
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargePortDoorOpen returns the old "charge_port_door_open" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargePortDoorOpen(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargePortDoorOpen is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargePortDoorOpen requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargePortDoorOpen: %w", err)
+	}
+	return oldValue.ChargePortDoorOpen, nil
+}
+
+// ResetChargePortDoorOpen resets all changes to the "charge_port_door_open" field.
+func (m *ChargeStateCacheMutation) ResetChargePortDoorOpen() {
+	m.charge_port_door_open = nil
+}
+
+// SetChargePortLatch sets the "charge_port_latch" field.
+func (m *ChargeStateCacheMutation) SetChargePortLatch(s string) {
+	m.charge_port_latch = &s
+}
+
+// ChargePortLatch returns the value of the "charge_port_latch" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargePortLatch() (r string, exists bool) {
+	v := m.charge_port_latch
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargePortLatch returns the old "charge_port_latch" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargePortLatch(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargePortLatch is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargePortLatch requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargePortLatch: %w", err)
+	}
+	return oldValue.ChargePortLatch, nil
+}
+
+// ResetChargePortLatch resets all changes to the "charge_port_latch" field.
+func (m *ChargeStateCacheMutation) ResetChargePortLatch() {
+	m.charge_port_latch = nil
+}
+
+// SetChargerActualCurrent sets the "charger_actual_current" field.
+func (m *ChargeStateCacheMutation) SetChargerActualCurrent(i int) {
+	m.charger_actual_current = &i
+	m.addcharger_actual_current = nil
+}
+
+// ChargerActualCurrent returns the value of the "charger_actual_current" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargerActualCurrent() (r int, exists bool) {
+	v := m.charger_actual_current
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargerActualCurrent returns the old "charger_actual_current" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargerActualCurrent(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargerActualCurrent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargerActualCurrent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargerActualCurrent: %w", err)
+	}
+	return oldValue.ChargerActualCurrent, nil
+}
+
+// AddChargerActualCurrent adds i to the "charger_actual_current" field.
+func (m *ChargeStateCacheMutation) AddChargerActualCurrent(i int) {
+	if m.addcharger_actual_current != nil {
+		*m.addcharger_actual_current += i
+	} else {
+		m.addcharger_actual_current = &i
+	}
+}
+
+// AddedChargerActualCurrent returns the value that was added to the "charger_actual_current" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargerActualCurrent() (r int, exists bool) {
+	v := m.addcharger_actual_current
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargerActualCurrent resets all changes to the "charger_actual_current" field.
+func (m *ChargeStateCacheMutation) ResetChargerActualCurrent() {
+	m.charger_actual_current = nil
+	m.addcharger_actual_current = nil
+}
+
+// SetChargerVoltage sets the "charger_voltage" field.
+func (m *ChargeStateCacheMutation) SetChargerVoltage(i int) {
+	m.charger_voltage = &i
+	m.addcharger_voltage = nil
+}
+
+// ChargerVoltage returns the value of the "charger_voltage" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargerVoltage() (r int, exists bool) {
+	v := m.charger_voltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargerVoltage returns the old "charger_voltage" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargerVoltage(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargerVoltage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargerVoltage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargerVoltage: %w", err)
+	}
+	return oldValue.ChargerVoltage, nil
+}
+
+// AddChargerVoltage adds i to the "charger_voltage" field.
+func (m *ChargeStateCacheMutation) AddChargerVoltage(i int) {
+	if m.addcharger_voltage != nil {
+		*m.addcharger_voltage += i
+	} else {
+		m.addcharger_voltage = &i
+	}
+}
+
+// AddedChargerVoltage returns the value that was added to the "charger_voltage" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedChargerVoltage() (r int, exists bool) {
+	v := m.addcharger_voltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetChargerVoltage resets all changes to the "charger_voltage" field.
+func (m *ChargeStateCacheMutation) ResetChargerVoltage() {
+	m.charger_voltage = nil
+	m.addcharger_voltage = nil
+}
+
+// SetChargingState sets the "charging_state" field.
+func (m *ChargeStateCacheMutation) SetChargingState(s string) {
+	m.charging_state = &s
+}
+
+// ChargingState returns the value of the "charging_state" field in the mutation.
+func (m *ChargeStateCacheMutation) ChargingState() (r string, exists bool) {
+	v := m.charging_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChargingState returns the old "charging_state" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldChargingState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChargingState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChargingState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChargingState: %w", err)
+	}
+	return oldValue.ChargingState, nil
+}
+
+// ResetChargingState resets all changes to the "charging_state" field.
+func (m *ChargeStateCacheMutation) ResetChargingState() {
+	m.charging_state = nil
+}
+
+// SetMinutesToFullCharge sets the "minutes_to_full_charge" field.
+func (m *ChargeStateCacheMutation) SetMinutesToFullCharge(i int) {
+	m.minutes_to_full_charge = &i
+	m.addminutes_to_full_charge = nil
+}
+
+// MinutesToFullCharge returns the value of the "minutes_to_full_charge" field in the mutation.
+func (m *ChargeStateCacheMutation) MinutesToFullCharge() (r int, exists bool) {
+	v := m.minutes_to_full_charge
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinutesToFullCharge returns the old "minutes_to_full_charge" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldMinutesToFullCharge(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinutesToFullCharge is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinutesToFullCharge requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinutesToFullCharge: %w", err)
+	}
+	return oldValue.MinutesToFullCharge, nil
+}
+
+// AddMinutesToFullCharge adds i to the "minutes_to_full_charge" field.
+func (m *ChargeStateCacheMutation) AddMinutesToFullCharge(i int) {
+	if m.addminutes_to_full_charge != nil {
+		*m.addminutes_to_full_charge += i
+	} else {
+		m.addminutes_to_full_charge = &i
+	}
+}
+
+// AddedMinutesToFullCharge returns the value that was added to the "minutes_to_full_charge" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedMinutesToFullCharge() (r int, exists bool) {
+	v := m.addminutes_to_full_charge
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMinutesToFullCharge resets all changes to the "minutes_to_full_charge" field.
+func (m *ChargeStateCacheMutation) ResetMinutesToFullCharge() {
+	m.minutes_to_full_charge = nil
+	m.addminutes_to_full_charge = nil
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (m *ChargeStateCacheMutation) SetTimestamp(t time.Time) {
+	m.timestamp = &t
+}
+
+// Timestamp returns the value of the "timestamp" field in the mutation.
+func (m *ChargeStateCacheMutation) Timestamp() (r time.Time, exists bool) {
+	v := m.timestamp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimestamp returns the old "timestamp" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+	}
+	return oldValue.Timestamp, nil
+}
+
+// ResetTimestamp resets all changes to the "timestamp" field.
+func (m *ChargeStateCacheMutation) ResetTimestamp() {
+	m.timestamp = nil
+}
+
+// SetUsableBatteryLevel sets the "usable_battery_level" field.
+func (m *ChargeStateCacheMutation) SetUsableBatteryLevel(i int) {
+	m.usable_battery_level = &i
+	m.addusable_battery_level = nil
+}
+
+// UsableBatteryLevel returns the value of the "usable_battery_level" field in the mutation.
+func (m *ChargeStateCacheMutation) UsableBatteryLevel() (r int, exists bool) {
+	v := m.usable_battery_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsableBatteryLevel returns the old "usable_battery_level" field's value of the ChargeStateCache entity.
+// If the ChargeStateCache object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeStateCacheMutation) OldUsableBatteryLevel(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsableBatteryLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsableBatteryLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsableBatteryLevel: %w", err)
+	}
+	return oldValue.UsableBatteryLevel, nil
+}
+
+// AddUsableBatteryLevel adds i to the "usable_battery_level" field.
+func (m *ChargeStateCacheMutation) AddUsableBatteryLevel(i int) {
+	if m.addusable_battery_level != nil {
+		*m.addusable_battery_level += i
+	} else {
+		m.addusable_battery_level = &i
+	}
+}
+
+// AddedUsableBatteryLevel returns the value that was added to the "usable_battery_level" field in this mutation.
+func (m *ChargeStateCacheMutation) AddedUsableBatteryLevel() (r int, exists bool) {
+	v := m.addusable_battery_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUsableBatteryLevel resets all changes to the "usable_battery_level" field.
+func (m *ChargeStateCacheMutation) ResetUsableBatteryLevel() {
+	m.usable_battery_level = nil
+	m.addusable_battery_level = nil
+}
+
+// Where appends a list predicates to the ChargeStateCacheMutation builder.
+func (m *ChargeStateCacheMutation) Where(ps ...predicate.ChargeStateCache) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ChargeStateCacheMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ChargeStateCacheMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ChargeStateCache, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ChargeStateCacheMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ChargeStateCacheMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ChargeStateCache).
+func (m *ChargeStateCacheMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ChargeStateCacheMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.vin != nil {
+		fields = append(fields, chargestatecache.FieldVin)
+	}
+	if m.battery_level != nil {
+		fields = append(fields, chargestatecache.FieldBatteryLevel)
+	}
+	if m.battery_range != nil {
+		fields = append(fields, chargestatecache.FieldBatteryRange)
+	}
+	if m.charge_amps != nil {
+		fields = append(fields, chargestatecache.FieldChargeAmps)
+	}
+	if m.charge_current_request != nil {
+		fields = append(fields, chargestatecache.FieldChargeCurrentRequest)
+	}
+	if m.charge_current_request_max != nil {
+		fields = append(fields, chargestatecache.FieldChargeCurrentRequestMax)
+	}
+	if m.charge_enable_request != nil {
+		fields = append(fields, chargestatecache.FieldChargeEnableRequest)
+	}
+	if m.charge_limit_soc != nil {
+		fields = append(fields, chargestatecache.FieldChargeLimitSoc)
+	}
+	if m.charge_port_door_open != nil {
+		fields = append(fields, chargestatecache.FieldChargePortDoorOpen)
+	}
+	if m.charge_port_latch != nil {
+		fields = append(fields, chargestatecache.FieldChargePortLatch)
+	}
+	if m.charger_actual_current != nil {
+		fields = append(fields, chargestatecache.FieldChargerActualCurrent)
+	}
+	if m.charger_voltage != nil {
+		fields = append(fields, chargestatecache.FieldChargerVoltage)
+	}
+	if m.charging_state != nil {
+		fields = append(fields, chargestatecache.FieldChargingState)
+	}
+	if m.minutes_to_full_charge != nil {
+		fields = append(fields, chargestatecache.FieldMinutesToFullCharge)
+	}
+	if m.timestamp != nil {
+		fields = append(fields, chargestatecache.FieldTimestamp)
+	}
+	if m.usable_battery_level != nil {
+		fields = append(fields, chargestatecache.FieldUsableBatteryLevel)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ChargeStateCacheMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case chargestatecache.FieldVin:
+		return m.Vin()
+	case chargestatecache.FieldBatteryLevel:
+		return m.BatteryLevel()
+	case chargestatecache.FieldBatteryRange:
+		return m.BatteryRange()
+	case chargestatecache.FieldChargeAmps:
+		return m.ChargeAmps()
+	case chargestatecache.FieldChargeCurrentRequest:
+		return m.ChargeCurrentRequest()
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		return m.ChargeCurrentRequestMax()
+	case chargestatecache.FieldChargeEnableRequest:
+		return m.ChargeEnableRequest()
+	case chargestatecache.FieldChargeLimitSoc:
+		return m.ChargeLimitSoc()
+	case chargestatecache.FieldChargePortDoorOpen:
+		return m.ChargePortDoorOpen()
+	case chargestatecache.FieldChargePortLatch:
+		return m.ChargePortLatch()
+	case chargestatecache.FieldChargerActualCurrent:
+		return m.ChargerActualCurrent()
+	case chargestatecache.FieldChargerVoltage:
+		return m.ChargerVoltage()
+	case chargestatecache.FieldChargingState:
+		return m.ChargingState()
+	case chargestatecache.FieldMinutesToFullCharge:
+		return m.MinutesToFullCharge()
+	case chargestatecache.FieldTimestamp:
+		return m.Timestamp()
+	case chargestatecache.FieldUsableBatteryLevel:
+		return m.UsableBatteryLevel()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ChargeStateCacheMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case chargestatecache.FieldVin:
+		return m.OldVin(ctx)
+	case chargestatecache.FieldBatteryLevel:
+		return m.OldBatteryLevel(ctx)
+	case chargestatecache.FieldBatteryRange:
+		return m.OldBatteryRange(ctx)
+	case chargestatecache.FieldChargeAmps:
+		return m.OldChargeAmps(ctx)
+	case chargestatecache.FieldChargeCurrentRequest:
+		return m.OldChargeCurrentRequest(ctx)
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		return m.OldChargeCurrentRequestMax(ctx)
+	case chargestatecache.FieldChargeEnableRequest:
+		return m.OldChargeEnableRequest(ctx)
+	case chargestatecache.FieldChargeLimitSoc:
+		return m.OldChargeLimitSoc(ctx)
+	case chargestatecache.FieldChargePortDoorOpen:
+		return m.OldChargePortDoorOpen(ctx)
+	case chargestatecache.FieldChargePortLatch:
+		return m.OldChargePortLatch(ctx)
+	case chargestatecache.FieldChargerActualCurrent:
+		return m.OldChargerActualCurrent(ctx)
+	case chargestatecache.FieldChargerVoltage:
+		return m.OldChargerVoltage(ctx)
+	case chargestatecache.FieldChargingState:
+		return m.OldChargingState(ctx)
+	case chargestatecache.FieldMinutesToFullCharge:
+		return m.OldMinutesToFullCharge(ctx)
+	case chargestatecache.FieldTimestamp:
+		return m.OldTimestamp(ctx)
+	case chargestatecache.FieldUsableBatteryLevel:
+		return m.OldUsableBatteryLevel(ctx)
+	}
+	return nil, fmt.Errorf("unknown ChargeStateCache field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeStateCacheMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case chargestatecache.FieldVin:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVin(v)
+		return nil
+	case chargestatecache.FieldBatteryLevel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryLevel(v)
+		return nil
+	case chargestatecache.FieldBatteryRange:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryRange(v)
+		return nil
+	case chargestatecache.FieldChargeAmps:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeAmps(v)
+		return nil
+	case chargestatecache.FieldChargeCurrentRequest:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeCurrentRequest(v)
+		return nil
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeCurrentRequestMax(v)
+		return nil
+	case chargestatecache.FieldChargeEnableRequest:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeEnableRequest(v)
+		return nil
+	case chargestatecache.FieldChargeLimitSoc:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargeLimitSoc(v)
+		return nil
+	case chargestatecache.FieldChargePortDoorOpen:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargePortDoorOpen(v)
+		return nil
+	case chargestatecache.FieldChargePortLatch:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargePortLatch(v)
+		return nil
+	case chargestatecache.FieldChargerActualCurrent:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargerActualCurrent(v)
+		return nil
+	case chargestatecache.FieldChargerVoltage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargerVoltage(v)
+		return nil
+	case chargestatecache.FieldChargingState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChargingState(v)
+		return nil
+	case chargestatecache.FieldMinutesToFullCharge:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinutesToFullCharge(v)
+		return nil
+	case chargestatecache.FieldTimestamp:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimestamp(v)
+		return nil
+	case chargestatecache.FieldUsableBatteryLevel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsableBatteryLevel(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeStateCache field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ChargeStateCacheMutation) AddedFields() []string {
+	var fields []string
+	if m.addbattery_level != nil {
+		fields = append(fields, chargestatecache.FieldBatteryLevel)
+	}
+	if m.addbattery_range != nil {
+		fields = append(fields, chargestatecache.FieldBatteryRange)
+	}
+	if m.addcharge_amps != nil {
+		fields = append(fields, chargestatecache.FieldChargeAmps)
+	}
+	if m.addcharge_current_request != nil {
+		fields = append(fields, chargestatecache.FieldChargeCurrentRequest)
+	}
+	if m.addcharge_current_request_max != nil {
+		fields = append(fields, chargestatecache.FieldChargeCurrentRequestMax)
+	}
+	if m.addcharge_limit_soc != nil {
+		fields = append(fields, chargestatecache.FieldChargeLimitSoc)
+	}
+	if m.addcharger_actual_current != nil {
+		fields = append(fields, chargestatecache.FieldChargerActualCurrent)
+	}
+	if m.addcharger_voltage != nil {
+		fields = append(fields, chargestatecache.FieldChargerVoltage)
+	}
+	if m.addminutes_to_full_charge != nil {
+		fields = append(fields, chargestatecache.FieldMinutesToFullCharge)
+	}
+	if m.addusable_battery_level != nil {
+		fields = append(fields, chargestatecache.FieldUsableBatteryLevel)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ChargeStateCacheMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case chargestatecache.FieldBatteryLevel:
+		return m.AddedBatteryLevel()
+	case chargestatecache.FieldBatteryRange:
+		return m.AddedBatteryRange()
+	case chargestatecache.FieldChargeAmps:
+		return m.AddedChargeAmps()
+	case chargestatecache.FieldChargeCurrentRequest:
+		return m.AddedChargeCurrentRequest()
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		return m.AddedChargeCurrentRequestMax()
+	case chargestatecache.FieldChargeLimitSoc:
+		return m.AddedChargeLimitSoc()
+	case chargestatecache.FieldChargerActualCurrent:
+		return m.AddedChargerActualCurrent()
+	case chargestatecache.FieldChargerVoltage:
+		return m.AddedChargerVoltage()
+	case chargestatecache.FieldMinutesToFullCharge:
+		return m.AddedMinutesToFullCharge()
+	case chargestatecache.FieldUsableBatteryLevel:
+		return m.AddedUsableBatteryLevel()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ChargeStateCacheMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case chargestatecache.FieldBatteryLevel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatteryLevel(v)
+		return nil
+	case chargestatecache.FieldBatteryRange:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatteryRange(v)
+		return nil
+	case chargestatecache.FieldChargeAmps:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargeAmps(v)
+		return nil
+	case chargestatecache.FieldChargeCurrentRequest:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargeCurrentRequest(v)
+		return nil
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargeCurrentRequestMax(v)
+		return nil
+	case chargestatecache.FieldChargeLimitSoc:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargeLimitSoc(v)
+		return nil
+	case chargestatecache.FieldChargerActualCurrent:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargerActualCurrent(v)
+		return nil
+	case chargestatecache.FieldChargerVoltage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddChargerVoltage(v)
+		return nil
+	case chargestatecache.FieldMinutesToFullCharge:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMinutesToFullCharge(v)
+		return nil
+	case chargestatecache.FieldUsableBatteryLevel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUsableBatteryLevel(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeStateCache numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ChargeStateCacheMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ChargeStateCacheMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ChargeStateCacheMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ChargeStateCache nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ChargeStateCacheMutation) ResetField(name string) error {
+	switch name {
+	case chargestatecache.FieldVin:
+		m.ResetVin()
+		return nil
+	case chargestatecache.FieldBatteryLevel:
+		m.ResetBatteryLevel()
+		return nil
+	case chargestatecache.FieldBatteryRange:
+		m.ResetBatteryRange()
+		return nil
+	case chargestatecache.FieldChargeAmps:
+		m.ResetChargeAmps()
+		return nil
+	case chargestatecache.FieldChargeCurrentRequest:
+		m.ResetChargeCurrentRequest()
+		return nil
+	case chargestatecache.FieldChargeCurrentRequestMax:
+		m.ResetChargeCurrentRequestMax()
+		return nil
+	case chargestatecache.FieldChargeEnableRequest:
+		m.ResetChargeEnableRequest()
+		return nil
+	case chargestatecache.FieldChargeLimitSoc:
+		m.ResetChargeLimitSoc()
+		return nil
+	case chargestatecache.FieldChargePortDoorOpen:
+		m.ResetChargePortDoorOpen()
+		return nil
+	case chargestatecache.FieldChargePortLatch:
+		m.ResetChargePortLatch()
+		return nil
+	case chargestatecache.FieldChargerActualCurrent:
+		m.ResetChargerActualCurrent()
+		return nil
+	case chargestatecache.FieldChargerVoltage:
+		m.ResetChargerVoltage()
+		return nil
+	case chargestatecache.FieldChargingState:
+		m.ResetChargingState()
+		return nil
+	case chargestatecache.FieldMinutesToFullCharge:
+		m.ResetMinutesToFullCharge()
+		return nil
+	case chargestatecache.FieldTimestamp:
+		m.ResetTimestamp()
+		return nil
+	case chargestatecache.FieldUsableBatteryLevel:
+		m.ResetUsableBatteryLevel()
+		return nil
+	}
+	return fmt.Errorf("unknown ChargeStateCache field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ChargeStateCacheMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ChargeStateCacheMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ChargeStateCacheMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ChargeStateCacheMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ChargeStateCacheMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ChargeStateCacheMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ChargeStateCacheMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ChargeStateCache unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ChargeStateCacheMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ChargeStateCache edge %s", name)
+}
 
 // GrantMutation represents an operation that mutates the Grant nodes in the graph.
 type GrantMutation struct {
@@ -568,4 +3246,420 @@ func (m *GrantMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *GrantMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Grant edge %s", name)
+}
+
+// PowerMetricMutation represents an operation that mutates the PowerMetric nodes in the graph.
+type PowerMetricMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *int
+	surplus_watt    *int
+	addsurplus_watt *int
+	timestamp       *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*PowerMetric, error)
+	predicates      []predicate.PowerMetric
+}
+
+var _ ent.Mutation = (*PowerMetricMutation)(nil)
+
+// powermetricOption allows management of the mutation configuration using functional options.
+type powermetricOption func(*PowerMetricMutation)
+
+// newPowerMetricMutation creates new mutation for the PowerMetric entity.
+func newPowerMetricMutation(c config, op Op, opts ...powermetricOption) *PowerMetricMutation {
+	m := &PowerMetricMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePowerMetric,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPowerMetricID sets the ID field of the mutation.
+func withPowerMetricID(id int) powermetricOption {
+	return func(m *PowerMetricMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PowerMetric
+		)
+		m.oldValue = func(ctx context.Context) (*PowerMetric, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PowerMetric.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPowerMetric sets the old PowerMetric of the mutation.
+func withPowerMetric(node *PowerMetric) powermetricOption {
+	return func(m *PowerMetricMutation) {
+		m.oldValue = func(context.Context) (*PowerMetric, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PowerMetricMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PowerMetricMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PowerMetricMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PowerMetricMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PowerMetric.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSurplusWatt sets the "surplus_watt" field.
+func (m *PowerMetricMutation) SetSurplusWatt(i int) {
+	m.surplus_watt = &i
+	m.addsurplus_watt = nil
+}
+
+// SurplusWatt returns the value of the "surplus_watt" field in the mutation.
+func (m *PowerMetricMutation) SurplusWatt() (r int, exists bool) {
+	v := m.surplus_watt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSurplusWatt returns the old "surplus_watt" field's value of the PowerMetric entity.
+// If the PowerMetric object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PowerMetricMutation) OldSurplusWatt(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSurplusWatt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSurplusWatt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSurplusWatt: %w", err)
+	}
+	return oldValue.SurplusWatt, nil
+}
+
+// AddSurplusWatt adds i to the "surplus_watt" field.
+func (m *PowerMetricMutation) AddSurplusWatt(i int) {
+	if m.addsurplus_watt != nil {
+		*m.addsurplus_watt += i
+	} else {
+		m.addsurplus_watt = &i
+	}
+}
+
+// AddedSurplusWatt returns the value that was added to the "surplus_watt" field in this mutation.
+func (m *PowerMetricMutation) AddedSurplusWatt() (r int, exists bool) {
+	v := m.addsurplus_watt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSurplusWatt resets all changes to the "surplus_watt" field.
+func (m *PowerMetricMutation) ResetSurplusWatt() {
+	m.surplus_watt = nil
+	m.addsurplus_watt = nil
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (m *PowerMetricMutation) SetTimestamp(t time.Time) {
+	m.timestamp = &t
+}
+
+// Timestamp returns the value of the "timestamp" field in the mutation.
+func (m *PowerMetricMutation) Timestamp() (r time.Time, exists bool) {
+	v := m.timestamp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimestamp returns the old "timestamp" field's value of the PowerMetric entity.
+// If the PowerMetric object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PowerMetricMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+	}
+	return oldValue.Timestamp, nil
+}
+
+// ResetTimestamp resets all changes to the "timestamp" field.
+func (m *PowerMetricMutation) ResetTimestamp() {
+	m.timestamp = nil
+}
+
+// Where appends a list predicates to the PowerMetricMutation builder.
+func (m *PowerMetricMutation) Where(ps ...predicate.PowerMetric) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PowerMetricMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PowerMetricMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PowerMetric, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PowerMetricMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PowerMetricMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PowerMetric).
+func (m *PowerMetricMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PowerMetricMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.surplus_watt != nil {
+		fields = append(fields, powermetric.FieldSurplusWatt)
+	}
+	if m.timestamp != nil {
+		fields = append(fields, powermetric.FieldTimestamp)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PowerMetricMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		return m.SurplusWatt()
+	case powermetric.FieldTimestamp:
+		return m.Timestamp()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PowerMetricMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		return m.OldSurplusWatt(ctx)
+	case powermetric.FieldTimestamp:
+		return m.OldTimestamp(ctx)
+	}
+	return nil, fmt.Errorf("unknown PowerMetric field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PowerMetricMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSurplusWatt(v)
+		return nil
+	case powermetric.FieldTimestamp:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimestamp(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PowerMetric field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PowerMetricMutation) AddedFields() []string {
+	var fields []string
+	if m.addsurplus_watt != nil {
+		fields = append(fields, powermetric.FieldSurplusWatt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PowerMetricMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		return m.AddedSurplusWatt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PowerMetricMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSurplusWatt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PowerMetric numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PowerMetricMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PowerMetricMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PowerMetricMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PowerMetric nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PowerMetricMutation) ResetField(name string) error {
+	switch name {
+	case powermetric.FieldSurplusWatt:
+		m.ResetSurplusWatt()
+		return nil
+	case powermetric.FieldTimestamp:
+		m.ResetTimestamp()
+		return nil
+	}
+	return fmt.Errorf("unknown PowerMetric field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PowerMetricMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PowerMetricMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PowerMetricMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PowerMetricMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PowerMetricMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PowerMetricMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PowerMetricMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PowerMetric unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PowerMetricMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PowerMetric edge %s", name)
 }

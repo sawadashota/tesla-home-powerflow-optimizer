@@ -54,7 +54,6 @@ type ChargeState struct {
 	ChargerVoltage          int     `json:"charger_voltage"`
 	ChargingState           string  `json:"charging_state"`
 	MinutesToFullCharge     int     `json:"minutes_to_full_charge"`
-	TimeToFullCharge        float32 `json:"time_to_full_charge"`
 	Timestamp               int64   `json:"timestamp"`
 	UsableBatteryLevel      int     `json:"usable_battery_level"`
 }
@@ -405,19 +404,19 @@ func (sh *strictHandler) SettingGetVehicleChargeSetting(w http.ResponseWriter, r
 var swaggerSpec = []string{
 
 	"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",
-	"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",
+	"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",
+	"Wwm6t4Hr2+r2Vuyedv8EAAD//2p/tXdOCgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

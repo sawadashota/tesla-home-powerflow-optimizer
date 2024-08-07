@@ -28,24 +28,34 @@ func (v *VehicleData) Validate() error {
 }
 
 type VehicleChargeState struct {
-	BatteryLevel            int       `validate:"required,min=0,max=100"`
-	BatteryRange            float32   `validate:"required,min=0"`
-	ChargeAmps              int       `validate:"required,min=0"`
-	ChargeCurrentRequest    int       `validate:"required,min=0"`
-	ChargeCurrentRequestMax int       `validate:"required,min=0"`
-	ChargeEnableRequest     bool      `validate:"required,min=0"`
-	ChargeLimitSoc          int       `validate:"required,min=0,max=100"`
-	ChargePortDoorOpen      bool      `validate:"required"`
-	ChargePortLatch         string    `validate:"required"`
-	ChargerActualCurrent    int       `validate:"required,min=0"`
-	ChargerVoltage          int       `validate:"required,min=0"`
-	ChargingState           string    `validate:"required"`
-	MinutesToFullCharge     int       `validate:"required,min=0"`
-	TimeToFullCharge        float32   `validate:"required,min=0"`
-	Timestamp               time.Time `validate:"required"`
-	UsableBatteryLevel      int       `validate:"required,min=0,max=100"`
+	VIN                     string        `validate:"required"`
+	BatteryLevel            int           `validate:"required,min=0,max=100"`
+	BatteryRange            float32       `validate:"required,min=0"`
+	ChargeAmps              int           `validate:"required,min=0"`
+	ChargeCurrentRequest    int           `validate:"required,min=0"`
+	ChargeCurrentRequestMax int           `validate:"required,min=0"`
+	ChargeEnableRequest     bool          `validate:"required,min=0"`
+	ChargeLimitSoc          int           `validate:"required,min=0,max=100"`
+	ChargePortDoorOpen      bool          `validate:"required"`
+	ChargePortLatch         string        `validate:"required"`
+	ChargerActualCurrent    int           `validate:"required,min=0"`
+	ChargerVoltage          int           `validate:"required,min=0"`
+	ChargingState           ChargingState `validate:"required"`
+	MinutesToFullCharge     int           `validate:"required,min=0"`
+	Timestamp               time.Time     `validate:"required"`
+	UsableBatteryLevel      int           `validate:"required,min=0,max=100"`
 }
 
 func (v *VehicleChargeState) Validate() error {
 	return Validate(v)
+}
+
+// IsOnline returns true if the vehicle is online.
+// Tesla goes sleep mode after 2 minutes of inactivity.
+func (v *VehicleChargeState) IsOnline() bool {
+	return time.Now().Sub(v.Timestamp) < time.Minute
+}
+
+func (v *VehicleChargeState) IsCharging() bool {
+	return v.ChargingState == ChargingStateCharging
 }

@@ -54,7 +54,6 @@ namespace Vehicle {
     charging_state: string;
 
     minutes_to_full_charge: integer;
-    time_to_full_charge: float;
     timestamp: int64;
 
     @minValue(0)

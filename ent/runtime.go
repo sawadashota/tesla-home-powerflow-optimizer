@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargesetting"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/grant"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/schema"
 )
@@ -11,6 +12,12 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	chargesettingFields := schema.ChargeSetting{}.Fields()
+	_ = chargesettingFields
+	// chargesettingDescEnabled is the schema descriptor for enabled field.
+	chargesettingDescEnabled := chargesettingFields[0].Descriptor()
+	// chargesetting.DefaultEnabled holds the default value on creation for the enabled field.
+	chargesetting.DefaultEnabled = chargesettingDescEnabled.Default.(bool)
 	grantFields := schema.Grant{}.Fields()
 	_ = grantFields
 	// grantDescSubject is the schema descriptor for subject field.

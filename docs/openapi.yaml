@@ -63,7 +63,6 @@ components:
         - charger_voltage
         - charging_state
         - minutes_to_full_charge
-        - time_to_full_charge
         - timestamp
         - usable_battery_level
       properties:
@@ -99,8 +98,6 @@ components:
           example: Charging
         minutes_to_full_charge:
           type: integer
-        time_to_full_charge:
-          type: number
         timestamp:
           type: integer
           format: int64

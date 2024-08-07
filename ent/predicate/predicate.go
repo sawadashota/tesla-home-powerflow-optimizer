@@ -6,5 +6,17 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// ChargeCommandHistory is the predicate function for chargecommandhistory builders.
+type ChargeCommandHistory func(*sql.Selector)
+
+// ChargeSetting is the predicate function for chargesetting builders.
+type ChargeSetting func(*sql.Selector)
+
+// ChargeStateCache is the predicate function for chargestatecache builders.
+type ChargeStateCache func(*sql.Selector)
+
 // Grant is the predicate function for grant builders.
 type Grant func(*sql.Selector)
+
+// PowerMetric is the predicate function for powermetric builders.
+type PowerMetric func(*sql.Selector)
