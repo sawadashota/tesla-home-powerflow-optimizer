@@ -3,7 +3,6 @@ package worker
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
@@ -46,7 +45,6 @@ func (w *Worker) Run(ctx context.Context) error {
 
 		const metricRetention = 100
 		olderThan := time.Now().Add(-w.r.AppConfig().CollectorIntervalDuration() * metricRetention)
-		w.r.Logger().Info("deleting old power metrics...", slog.Int("retention", metricRetention), slog.Time("older_than", olderThan))
 		err := w.r.PowerMetricRepository().DeleteOlderThan(ctx, olderThan)
 		if err != nil {
 			w.r.Logger().Error("failed to delete old power metrics", logx.ErrorAttr(err))

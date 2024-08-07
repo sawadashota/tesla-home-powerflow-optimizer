@@ -37,6 +37,8 @@ func (c *Client) GetVehicle(ctx context.Context, vin string) (*model.VehicleSumm
 			return nil, failure.New(model.ErrCodeUnauthorized, failure.Message("unauthorized"))
 		case http.StatusNotFound:
 			return nil, failure.New(model.ErrCodeNotFound, failure.Messagef("vehicle (%s) not found", c.r.AppConfig().TeslaVIN))
+		case http.StatusTooManyRequests:
+			return nil, failure.New(model.ErrCodeTooManyRequests, failure.Message("too many requests"))
 		default:
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
@@ -76,6 +78,8 @@ func (c *Client) GetVehicleData(ctx context.Context, vin string) (*model.Vehicle
 			return nil, failure.New(model.ErrCodeDeviceOffline, failure.Message("device is offline"))
 		case http.StatusNotFound:
 			return nil, failure.New(model.ErrCodeNotFound, failure.Messagef("vehicle (%s) not found", c.r.AppConfig().TeslaVIN))
+		case http.StatusTooManyRequests:
+			return nil, failure.New(model.ErrCodeTooManyRequests, failure.Message("too many requests"))
 		case http.StatusUnauthorized:
 			return nil, failure.New(model.ErrCodeUnauthorized, failure.Message("unauthorized"))
 		default:
@@ -155,6 +159,8 @@ func (c *Client) WakeUp(ctx context.Context, vin string) error {
 			return failure.New(model.ErrCodeUnauthorized, failure.Message("unauthorized"))
 		case http.StatusNotFound:
 			return failure.New(model.ErrCodeNotFound, failure.Messagef("vehicle (%s) not found", c.r.AppConfig().TeslaVIN))
+		case http.StatusTooManyRequests:
+			return failure.New(model.ErrCodeTooManyRequests, failure.Message("too many requests"))
 		default:
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
