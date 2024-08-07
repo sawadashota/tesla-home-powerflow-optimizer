@@ -13,6 +13,12 @@
 * Something to get your home power usage data
   * AiSEG2
 
+## Installation
+
+```shell
+go install github.com/sawadashota/tesla-home-powerflow-optimizer
+```
+
 ## Setup
 
 ### Environment Variables
@@ -21,4 +27,31 @@
 cp .envrc.sample .envrc
 vi .envrc
 direnv allow
+```
+
+### Sign in with Tesla
+
+```shell
+tesla-home-powerflow-optimizer authentication
+```
+
+### Check API Connections
+
+> [!IMPORTANT]  
+> Check your Tesla car is plugged and ready to charge.
+
+```shell
+tesla-home-powerflow-optimizer test start-charging
+```
+
+and check collector (e.g. AiSEG2) connection
+
+```shell
+tesla-home-powerflow-optimizer test collector
+```
+
+## Run
+
+```shell
+tesla-home-powerflow-optimizer serve
 ```
