@@ -1,9 +1,30 @@
+# You can create OAuth2 client at https://developer.tesla.com/
+# Client Should be:
+# - OAuth Grant Type: `Authorization Code and Machine-to-Machine`
+# - Scope: vehicle_device_data vehicle_device_command
 export TESLA_API_OAUTH_ISSUER=https://auth.tesla.com/oauth2/v3
 export TESLA_API_OAUTH_CLIENT_ID=
 export TESLA_API_OAUTH_REDIRECT_URI=http://localhost:3090/oauth/signin/callback
 export TESLA_API_HOST=https://fleet-api.prd.na.vn.cloud.tesla.com
 export TESLA_VIN=
 
+export TESLA_KEY_NAME=$(whoami)
+# $ tesla-keygen create > public_key.pem
+# $ tesla-keygen export > private_key.pem
+# https://github.com/teslamotors/vehicle-command
+export TESLA_PRIVATE_KEY_PATH=private_key.pem
+
 export AISEG2_ORIGIN=
 export AISEG2_USER=
 export AISEG2_PASSWORD=
+
+# Turning point
+# Tesla API has rate limit
+# please adjust this value to avoid rate limit
+# https://developer.tesla.com/docs/fleet-api/getting-started/subscription-plans
+export COLLECTOR_INTERVAL=5
+
+# Customization
+# following env vars are default values
+export SERVER_PORT=8088
+export SIGNIN_WITH_TESLA_BROWSER_PORT=3090
