@@ -73,7 +73,12 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		}
 	} else {
 		if time.Since(history.Timestamp) < setting.UpdateInterval {
-			s.r.Logger().Info("last charge command is too recent. skip at the moment.", slog.Time("last_timestamp", history.Timestamp))
+			s.r.Logger().Info(
+				"last charge command is too recent. skip at the moment.",
+				slog.Time("last_timestamp", history.Timestamp),
+				slog.String("interval", time.Since(history.Timestamp).String()),
+				slog.String("interval_remains", (setting.UpdateInterval-time.Since(history.Timestamp)).String()),
+			)
 			return nil
 		}
 	}
@@ -106,12 +111,28 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		return nil
 	}
 
-	return nil
+	return s.updateChargeState(ctx, state.VIN, state, decision)
 }
 
 func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state *model.VehicleChargeState, amps int) error {
+	if !state.IsFresh() {
+		if err := s.r.VehicleRepository().WakeUp(ctx, vin); err != nil {
+			return err
+		}
+
+		newState, err := s.waitUntilWakedUp(ctx, vin)
+		if err != nil {
+			return err
+		}
+		state = newState
+	}
+
 	if state.ChargePortLatch != "Engaged" {
 		s.r.Logger().Info("charge port is not engaged", slog.String("vin", vin))
+		return s.r.ChargeSettingRepository().SetEnabled(ctx, false)
+	}
+	if state.ChargeLimitSoc == state.BatteryLevel && !state.IsCharging() {
+		s.r.Logger().Info("battery level is full", slog.String("vin", vin), slog.Int("battery_level", state.BatteryLevel))
 		return s.r.ChargeSettingRepository().SetEnabled(ctx, false)
 	}
 	if amps == 0 {
@@ -124,19 +145,6 @@ func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state
 			Amps:      0,
 			Timestamp: time.Now(),
 		})
-	}
-
-	if !state.IsOnline() {
-		if err := s.r.VehicleRepository().WakeUp(ctx, vin); err != nil {
-			return err
-		}
-
-		newState, err := s.waitUntilWakedUp(ctx, vin)
-		if err != nil {
-			return err
-		}
-		// retry with the fresh state
-		return s.updateChargeState(ctx, vin, newState, amps)
 	}
 
 	history := &model.ChargeCommandHistory{

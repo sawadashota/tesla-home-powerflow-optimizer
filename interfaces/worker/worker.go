@@ -1,18 +1,16 @@
-package bgcollector
+package worker
 
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/event"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
 )
 
@@ -23,10 +21,12 @@ type (
 	dependencies interface {
 		logx.Provider
 		configuration.AppConfigProvider
-		worker.PubSubProvider
 		collector.Provider
 		service.ChargeServiceProvider
 		repository.PowerMetricRepositoryProvider
+	}
+	Provider interface {
+		Worker() *Worker
 	}
 )
 
@@ -39,11 +39,21 @@ func (w *Worker) Run(ctx context.Context) error {
 	w.r.Logger().Info(fmt.Sprintf("collector interval: %s", interval))
 	ticker := time.NewTicker(interval)
 	var perform = func() {
+		w.r.Logger().Info("collecting surplus power...")
 		if err := w.perform(ctx); err != nil {
 			w.r.Logger().Error("failed to collect", logx.ErrorAttr(err))
 		}
+
+		const metricRetention = 100
+		olderThan := time.Now().Add(-w.r.AppConfig().CollectorIntervalDuration() * metricRetention)
+		w.r.Logger().Info("deleting old power metrics...", slog.Int("retention", metricRetention), slog.Time("older_than", olderThan))
+		err := w.r.PowerMetricRepository().DeleteOlderThan(ctx, olderThan)
+		if err != nil {
+			w.r.Logger().Error("failed to delete old power metrics", logx.ErrorAttr(err))
+		}
 	}
 
+	perform()
 	for {
 		select {
 		case <-ctx.Done():
@@ -56,7 +66,6 @@ func (w *Worker) Run(ctx context.Context) error {
 }
 
 func (w *Worker) perform(ctx context.Context) error {
-	w.r.Logger().Info("collecting surplus power...")
 	if err := w.collect(ctx); err != nil {
 		return err
 	}
@@ -68,8 +77,5 @@ func (w *Worker) collect(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := w.r.PowerMetricRepository().CreateOne(ctx, metric); err != nil {
-		return err
-	}
-	return w.r.MetricInsertedEventPublisher().Publish(&event.MetricInsertedEvent{})
+	return w.r.PowerMetricRepository().CreateOne(ctx, metric)
 }

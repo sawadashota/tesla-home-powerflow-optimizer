@@ -6,13 +6,11 @@ import (
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/app/usecase"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector/aiseg2"
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/event"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/infrastructure/tesla"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker/chargecontroller"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
 )
 
@@ -33,7 +31,7 @@ type (
 		repository.ChargeSettingRepositoryProvider
 
 		collector.Provider
-		worker.PubSubProvider
+		worker.Provider
 	}
 	serverRegistry struct {
 		EssentialRegistry
@@ -46,8 +44,7 @@ type (
 		vehicleRepository repository.VehicleRepository
 
 		collector collector.Collector
-		worker.PubSubProvider
-		chargeControllerSubscriber chargecontroller.Subscriber
+		worker    *worker.Worker
 	}
 )
 
@@ -61,7 +58,6 @@ func NewServerRegistry(ctx context.Context) (ServerRegistry, error) {
 	r := &serverRegistry{
 		EssentialRegistry: registry,
 	}
-	r.PubSubProvider = worker.NewPubSub(r)
 	return r, nil
 }
 
@@ -109,9 +105,9 @@ func (r *serverRegistry) Collector() collector.Collector {
 	return r.collector
 }
 
-func (r *serverRegistry) MetricInsertedEventSubscriber() event.MetricInsertedEventSubscriber {
-	if r.chargeControllerSubscriber == nil {
-		r.chargeControllerSubscriber = chargecontroller.New(r)
+func (r *serverRegistry) Worker() *worker.Worker {
+	if r.worker == nil {
+		r.worker = worker.New(r)
 	}
-	return r.chargeControllerSubscriber
+	return r.worker
 }

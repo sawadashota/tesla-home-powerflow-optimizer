@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker/bgcollector"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
 
 	"github.com/spf13/cobra"
 
@@ -35,7 +35,7 @@ func newServeCommand() *cobra.Command {
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
 
-			worker := bgcollector.New(r)
+			worker := worker.New(r)
 			go func() {
 				r.Logger().Info("starting worker")
 				if err := worker.Run(ctx); err != nil {

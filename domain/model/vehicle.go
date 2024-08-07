@@ -50,9 +50,9 @@ func (v *VehicleChargeState) Validate() error {
 	return Validate(v)
 }
 
-// IsOnline returns true if the vehicle is online.
+// IsFresh returns true if the vehicle is online.
 // Tesla goes sleep mode after 2 minutes of inactivity.
-func (v *VehicleChargeState) IsOnline() bool {
+func (v *VehicleChargeState) IsFresh() bool {
 	return time.Now().Sub(v.Timestamp) < time.Minute
 }
 
