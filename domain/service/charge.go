@@ -72,8 +72,8 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		return err
 	}
 	if len(metrics) < metricCount ||
-		metrics.MaximumInterval() > setting.UpdateInterval*2 ||
-		metrics.LatestTimestamp().Add(setting.UpdateInterval*2).Before(time.Now()) {
+		metrics.MaximumInterval() > s.r.AppConfig().CollectorIntervalDuration()*2 ||
+		metrics.LatestTimestamp().Add(s.r.AppConfig().CollectorIntervalDuration()*2).Before(time.Now()) {
 		s.r.Logger().Info("invalid metrics. not enough data, too old or too long interval",
 			slog.Int("count", len(metrics)),
 			slog.Time("latest_timestamp", metrics.LatestTimestamp()),
@@ -123,9 +123,16 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 	}
 
 	// adjust the charge state
-	if state.ChargeAmps == decision {
-		s.r.Logger().Info("no need to adjust", slog.Int("decision", decision), slog.Int("current", state.ChargeAmps))
-		return nil
+	if state.IsCharging() {
+		if state.ChargeAmps == decision {
+			s.r.Logger().Info("no need to adjust because decision is not changed", slog.Int("decision", decision), slog.Int("current", state.ChargeAmps))
+			return nil
+		}
+	} else {
+		if decision == 0 {
+			s.r.Logger().Info("no need to adjust because already stopped", slog.Int("decision", decision))
+			return nil
+		}
 	}
 
 	return s.updateChargeState(ctx, state.VIN, state, decision)
@@ -153,6 +160,10 @@ func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state
 		return s.r.ChargeSettingRepository().SetEnabled(ctx, false)
 	}
 	if amps == 0 {
+		if state.IsCharging() {
+			s.r.Logger().Info("already stopped charging. nothing to do", slog.String("vin", vin))
+			return nil
+		}
 		if err := s.r.VehicleRepository().StopCharge(ctx, vin); err != nil {
 			return err
 		}
