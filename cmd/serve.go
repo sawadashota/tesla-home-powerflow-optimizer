@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -35,10 +36,22 @@ func newServeCommand() *cobra.Command {
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
 
-			worker := worker.New(r)
+			state, err := r.ChargeService().RefreshChargeState(ctx, r.AppConfig().TeslaVIN)
+			if err != nil {
+				return err
+			}
+			r.Logger().Info(
+				"vehicle state",
+				slog.String("ChargePortLatch", state.ChargePortLatch),
+				slog.Int("BatteryLevel", state.BatteryLevel),
+				slog.Bool("ChargeEnableRequest", state.ChargeEnableRequest),
+				slog.Int("ChargeAmps", state.ChargeAmps),
+			)
+
+			w := worker.New(r)
 			go func() {
 				r.Logger().Info("starting worker")
-				if err := worker.Run(ctx); err != nil {
+				if err := w.Run(ctx); err != nil {
 					r.Logger().Error(err.Error())
 				}
 			}()

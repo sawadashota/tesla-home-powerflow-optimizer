@@ -36,6 +36,23 @@ func NewChargeService(r ChargeServiceDependencies) *ChargeService {
 	return &ChargeService{r: r}
 }
 
+func (s *ChargeService) RefreshChargeState(ctx context.Context, vin string) (*model.VehicleChargeState, error) {
+	state, err := s.r.VehicleChargeStateCache().FindOne(ctx, vin)
+	if err == nil && state.IsFresh() {
+		s.r.Logger().Info("cache is fresh", slog.String("vin", vin))
+		return state, nil
+	} else if err != nil && !failure.Is(err, model.ErrCodeNotFound) {
+		return nil, err
+	}
+
+	s.r.Logger().Info("fetching state from the vehicle...", slog.String("vin", vin))
+
+	if err := s.r.VehicleRepository().WakeUp(ctx, vin); err != nil {
+		return nil, err
+	}
+	return s.waitUntilWakedUp(ctx, vin)
+}
+
 // Adjust evaluates the current power usage, charge settings, and latest charge status cache,
 // and makes necessary adjustments to the charging process. This may involve starting
 // or stopping the charging process, as well as increasing or decreasing the charging amperage.
