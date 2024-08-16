@@ -10,6 +10,13 @@ export PATH := $(GOBIN):${PATH}
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 API_SPEC := ./docs/openapi.yaml
 
+.PHONY: bootstrap
+bootstrap: ## Bootstrap the project
+	npm install
+	npm --prefix interfaces/html install
+	make build-html
+	go mod download
+
 .PHONY: tsp
 tsp: ## Generate tsp
 	npm run tsp

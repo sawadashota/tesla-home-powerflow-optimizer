@@ -12,11 +12,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/html"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/restapi"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
-	"github.com/spf13/cobra"
 )
 
 type httpHandlerMerger struct {

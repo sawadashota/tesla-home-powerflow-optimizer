@@ -55,3 +55,5 @@ tesla-home-powerflow-optimizer test collector
 ```shell
 tesla-home-powerflow-optimizer serve
 ```
+
+You can access the setting page at http://localhost:8088
