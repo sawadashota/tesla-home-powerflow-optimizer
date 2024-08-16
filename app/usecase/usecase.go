@@ -2,14 +2,13 @@ package usecase
 
 import (
 	"context"
-
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
+	"time"
 
 	"github.com/morikuni/failure/v2"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
-
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/pkg/restapi"
 )
 
@@ -23,6 +22,7 @@ type (
 	dependencies interface {
 		configuration.AppConfigProvider
 		service.VehicleServiceProvider
+		service.ChargeServiceProvider
 	}
 	Provider interface {
 		Usecase() Usecase
@@ -74,7 +74,35 @@ func (u *usecase) GetVehicleData(ctx context.Context, _ restapi.GetVehicleDataRe
 	}, nil
 }
 
-func (u *usecase) SettingGetVehicleChargeSetting(ctx context.Context, request restapi.SettingGetVehicleChargeSettingRequestObject) (restapi.SettingGetVehicleChargeSettingResponseObject, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *usecase) SettingGetVehicleChargeSetting(ctx context.Context, req restapi.SettingGetVehicleChargeSettingRequestObject) (restapi.SettingGetVehicleChargeSettingResponseObject, error) {
+	s, err := u.r.ChargeService().DescribeSetting(ctx)
+	if err != nil {
+		return restapi.SettingGetVehicleChargeSetting500JSONResponse{
+			Code:    restapi.InternalServerError,
+			Message: err.Error(),
+		}, nil
+	}
+	return restapi.SettingGetVehicleChargeSetting200JSONResponse{
+		ChargeStartThreshold:        s.ChargeStartThreshold,
+		Enabled:                     s.Enabled,
+		PowerUsageDecreaseThreshold: s.PowerUsageDecreaseThreshold,
+		PowerUsageIncreaseThreshold: s.PowerUsageIncreaseThreshold,
+		UpdateInterval:              int(s.UpdateInterval.Minutes()),
+	}, nil
+}
+
+func (u *usecase) SettingSaveVehicleChargeSetting(ctx context.Context, req restapi.SettingSaveVehicleChargeSettingRequestObject) (restapi.SettingSaveVehicleChargeSettingResponseObject, error) {
+	if err := u.r.ChargeService().SaveSetting(ctx, &model.ChargeSetting{
+		ChargeStartThreshold:        req.Body.ChargeStartThreshold,
+		Enabled:                     req.Body.Enabled,
+		PowerUsageDecreaseThreshold: req.Body.PowerUsageDecreaseThreshold,
+		PowerUsageIncreaseThreshold: req.Body.PowerUsageIncreaseThreshold,
+		UpdateInterval:              time.Duration(req.Body.UpdateInterval) * time.Minute,
+	}); err != nil {
+		return restapi.SettingSaveVehicleChargeSetting500JSONResponse{
+			Code:    restapi.InternalServerError,
+			Message: err.Error(),
+		}, nil
+	}
+	return restapi.SettingSaveVehicleChargeSetting201Response{}, nil
 }

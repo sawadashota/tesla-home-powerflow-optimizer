@@ -3,6 +3,8 @@ package restapi
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/app/usecase"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/restapi/errors"
@@ -19,6 +21,10 @@ type (
 
 func NewHandler(r dependencies) http.Handler {
 	m := middleware.New(r)
+
+	mux := chi.NewRouter()
+	mux.Use(m.NewCorsMiddleware())
+
 	return restapi.HandlerWithOptions(
 		restapi.NewStrictHandlerWithOptions(
 			r.Usecase(),
@@ -29,6 +35,7 @@ func NewHandler(r dependencies) http.Handler {
 			},
 		),
 		restapi.ChiServerOptions{
+			BaseRouter: mux,
 			Middlewares: []restapi.MiddlewareFunc{
 				m.NewLoggerMiddleware(),
 				m.NewRequestValidatorMiddleware(),

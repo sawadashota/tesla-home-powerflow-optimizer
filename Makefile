@@ -31,6 +31,14 @@ dev: ## Run dev server
 unit-test: ## unit test
 	go test -failfast -count=1 -race ./...
 
+.PHONY: build-html ## Build the HTML interface
+build-html:
+	npm --prefix interfaces/html run build
+
+.PHONY: build ## Build the application
+build: build-html
+	go install .
+
 .PhONY: generate-sdk
 generate-sdk: tsp ## Generate SDK
 	$(OAPI_CODEGEN) -config .oapi-codegen.yaml $(API_SPEC)

@@ -135,7 +135,20 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		}
 	}
 
-	return s.updateChargeState(ctx, state.VIN, state, decision)
+	if err := s.updateChargeState(ctx, state.VIN, state, decision); err != nil {
+		return err
+	}
+
+	_, err = s.describeVehicleChargeStateWithDelay(ctx, state.VIN)
+	return err
+}
+
+func (s *ChargeService) DescribeSetting(ctx context.Context) (*model.ChargeSetting, error) {
+	return s.r.ChargeSettingRepository().FindOne(ctx)
+}
+
+func (s *ChargeService) SaveSetting(ctx context.Context, setting *model.ChargeSetting) error {
+	return s.r.ChargeSettingRepository().SaveOne(ctx, setting)
 }
 
 func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state *model.VehicleChargeState, amps int) error {
@@ -213,6 +226,19 @@ func (s *ChargeService) describeChargeState(ctx context.Context, vin string) (*m
 
 func (s *ChargeService) waitUntilWakedUp(ctx context.Context, vin string) (*model.VehicleChargeState, error) {
 	vehicle, err := s.r.VehicleRepository().WaitUntilWakedUp(ctx, vin)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.r.VehicleChargeStateCache().SaveOne(ctx, &vehicle.ChargeState); err != nil {
+		return nil, err
+	}
+	return &vehicle.ChargeState, nil
+}
+
+// describeVehicleChargeStateWithDelay describes the vehicle charge state with a delay due to update.
+func (s *ChargeService) describeVehicleChargeStateWithDelay(ctx context.Context, vin string) (*model.VehicleChargeState, error) {
+	time.Sleep(20 * time.Second)
+	vehicle, err := s.r.VehicleRepository().GetVehicleData(ctx, vin)
 	if err != nil {
 		return nil, err
 	}

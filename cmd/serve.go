@@ -8,16 +8,29 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"slices"
 	"syscall"
 	"time"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
-
-	"github.com/spf13/cobra"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/html"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/restapi"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/interfaces/worker"
+	"github.com/spf13/cobra"
 )
+
+type httpHandlerMerger struct {
+	api  http.Handler
+	html http.Handler
+}
+
+func (m *httpHandlerMerger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if slices.Contains(html.PathList(), r.URL.Path) {
+		m.html.ServeHTTP(w, r)
+	} else {
+		m.api.ServeHTTP(w, r)
+	}
+}
 
 func newServeCommand() *cobra.Command {
 	var r driver.ServerRegistry
@@ -57,8 +70,11 @@ func newServeCommand() *cobra.Command {
 			}()
 
 			srv := http.Server{
-				Addr:         fmt.Sprintf(":%d", r.ServerConfig().Port),
-				Handler:      restapi.NewHandler(r),
+				Addr: fmt.Sprintf(":%d", r.ServerConfig().Port),
+				Handler: &httpHandlerMerger{
+					api:  restapi.NewHandler(r),
+					html: html.NewHandler(r),
+				},
 				ReadTimeout:  5 * time.Second,
 				WriteTimeout: 10 * time.Second,
 				IdleTimeout:  120 * time.Second,

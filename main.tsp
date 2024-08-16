@@ -84,11 +84,38 @@ namespace Vehicle {
     namespace Setting {
       model Setting {
         enabled: boolean;
+
+        @minValue(100)
+        charge_start_threshold: integer;
+
+        @minValue(100)
+        power_usage_increase_threshold: integer;
+
+        @maxValue(100)
+        power_usage_decrease_threshold: integer;
+
+        @doc("minutes of update interval")
+        @minValue(10)
+        update_interval: integer;
       }
 
       op getVehicleChargeSetting(): {
         @statusCode statusCode: 200;
         @body body: Setting;
+      } | {
+        @statusCode statusCode: 500;
+        @body error: Error;
+      };
+
+      @put
+      op saveVehicleChargeSetting(@body body: Setting): {
+        @statusCode statusCode: 201;
+      } | {
+        @statusCode statusCode: 400;
+        @body error: Error;
+      } | {
+        @statusCode statusCode: 500;
+        @body error: Error;
       };
     }
   }

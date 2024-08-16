@@ -36,7 +36,13 @@ const (
 
 // ChargeSettingSetting defines model for Charge.Setting.Setting.
 type ChargeSettingSetting struct {
-	Enabled bool `json:"enabled"`
+	ChargeStartThreshold        int  `json:"charge_start_threshold"`
+	Enabled                     bool `json:"enabled"`
+	PowerUsageDecreaseThreshold int  `json:"power_usage_decrease_threshold"`
+	PowerUsageIncreaseThreshold int  `json:"power_usage_increase_threshold"`
+
+	// UpdateInterval minutes of update interval
+	UpdateInterval int `json:"update_interval"`
 }
 
 // ChargeState defines model for ChargeState.
@@ -77,6 +83,9 @@ type VehicleData struct {
 // VehicleDataState defines model for VehicleData.State.
 type VehicleDataState string
 
+// SettingSaveVehicleChargeSettingJSONRequestBody defines body for SettingSaveVehicleChargeSetting for application/json ContentType.
+type SettingSaveVehicleChargeSettingJSONRequestBody = ChargeSettingSetting
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
@@ -85,6 +94,9 @@ type ServerInterface interface {
 
 	// (GET /vehicle/charge/setting)
 	SettingGetVehicleChargeSetting(w http.ResponseWriter, r *http.Request)
+
+	// (PUT /vehicle/charge/setting)
+	SettingSaveVehicleChargeSetting(w http.ResponseWriter, r *http.Request)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -98,6 +110,11 @@ func (_ Unimplemented) GetVehicleData(w http.ResponseWriter, r *http.Request) {
 
 // (GET /vehicle/charge/setting)
 func (_ Unimplemented) SettingGetVehicleChargeSetting(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (PUT /vehicle/charge/setting)
+func (_ Unimplemented) SettingSaveVehicleChargeSetting(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -131,6 +148,21 @@ func (siw *ServerInterfaceWrapper) SettingGetVehicleChargeSetting(w http.Respons
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SettingGetVehicleChargeSetting(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SettingSaveVehicleChargeSetting operation middleware
+func (siw *ServerInterfaceWrapper) SettingSaveVehicleChargeSetting(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SettingSaveVehicleChargeSetting(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -259,6 +291,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/vehicle/charge/setting", wrapper.SettingGetVehicleChargeSetting)
 	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/vehicle/charge/setting", wrapper.SettingSaveVehicleChargeSetting)
+	})
 
 	return r
 }
@@ -313,6 +348,49 @@ func (response SettingGetVehicleChargeSetting200JSONResponse) VisitSettingGetVeh
 	return json.NewEncoder(w).Encode(response)
 }
 
+type SettingGetVehicleChargeSetting500JSONResponse Error
+
+func (response SettingGetVehicleChargeSetting500JSONResponse) VisitSettingGetVehicleChargeSettingResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SettingSaveVehicleChargeSettingRequestObject struct {
+	Body *SettingSaveVehicleChargeSettingJSONRequestBody
+}
+
+type SettingSaveVehicleChargeSettingResponseObject interface {
+	VisitSettingSaveVehicleChargeSettingResponse(w http.ResponseWriter) error
+}
+
+type SettingSaveVehicleChargeSetting201Response struct {
+}
+
+func (response SettingSaveVehicleChargeSetting201Response) VisitSettingSaveVehicleChargeSettingResponse(w http.ResponseWriter) error {
+	w.WriteHeader(201)
+	return nil
+}
+
+type SettingSaveVehicleChargeSetting400JSONResponse Error
+
+func (response SettingSaveVehicleChargeSetting400JSONResponse) VisitSettingSaveVehicleChargeSettingResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SettingSaveVehicleChargeSetting500JSONResponse Error
+
+func (response SettingSaveVehicleChargeSetting500JSONResponse) VisitSettingSaveVehicleChargeSettingResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
@@ -321,6 +399,9 @@ type StrictServerInterface interface {
 
 	// (GET /vehicle/charge/setting)
 	SettingGetVehicleChargeSetting(ctx context.Context, request SettingGetVehicleChargeSettingRequestObject) (SettingGetVehicleChargeSettingResponseObject, error)
+
+	// (PUT /vehicle/charge/setting)
+	SettingSaveVehicleChargeSetting(ctx context.Context, request SettingSaveVehicleChargeSettingRequestObject) (SettingSaveVehicleChargeSettingResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -400,23 +481,56 @@ func (sh *strictHandler) SettingGetVehicleChargeSetting(w http.ResponseWriter, r
 	}
 }
 
+// SettingSaveVehicleChargeSetting operation middleware
+func (sh *strictHandler) SettingSaveVehicleChargeSetting(w http.ResponseWriter, r *http.Request) {
+	var request SettingSaveVehicleChargeSettingRequestObject
+
+	var body SettingSaveVehicleChargeSettingJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SettingSaveVehicleChargeSetting(ctx, request.(SettingSaveVehicleChargeSettingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SettingSaveVehicleChargeSetting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SettingSaveVehicleChargeSettingResponseObject); ok {
+		if err := validResponse.VisitSettingSaveVehicleChargeSettingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xW32vkNhD+V4zaR5P1tdcS/FbSuxJoy0HKvYRgZuVZW4c0UqXxkhD2fy+S7P1p7xHa",
-	"3tPK1jeame/7NOtXIa1xlpA4iPpVBNmjgbS868F3ePOAzIq66TfuOG8delaYcEiw1tjGJb84FLVYW6sR",
-	"SOx2pfD496B83H7cI5/KCWnXX1Cy2JVjtgcGxssUa2BG/9Jo3KKOLww8KzMYUb+rqlIYRfmp2h+siLFD",
-	"H0+egj1Qh0dV0mDWGSFT7gaMC0f7R0eMADl4j8RN7AkDvwXbGHi+is/czBy9J3MP1cooboKVb2VijHfW",
-	"c9Na6xvrkK6mSlANLPuk9DMYpyPyA3XQYSv2WQL7aI59pG9A8gB64uFa777ZWs1wIs45SFHXhMkchzru",
-	"xr25QoyigTE0bJvNoHWTk83nYGUwMBgXtzfWG+AM+Pm9mGNyCEmtf+HLs6txetK5aU8tuujHq+ZbctqM",
-	"rZacMmeLRcEv1b2QclGjY0EWyJ6bIR+8t/5yekjbJtm/97gRtfhudRh5q3HerVLoXQRG52AIp3acXHWm",
-	"Wjr5gF+s6W6sACm64VF8BKWx/eRRWmoVKxu5/QxatRAfch+l+NPyRztQvGb3xOgJ9AP6LfoMeJox/Wfs",
-	"ldT4KzDMEJHV29+ja4Qcz+NdKQ53b2zBklYUm7ebTVrNVbNVabwYRb8jddyL+l35FUpjyJSuPK34kt4Y",
-	"rGhjk1KKT0ZC8QcQdGiQuIisKRkP3KIPke5aVDfVTRWLjNYGp0QtfkyvSuGA+0TYapvpjOsO0xCLfCaR",
-	"7ltRi9+QjxmPrQRnKWS+f6iq7D/icQSCc1rJFL/6Eiwd/nK/psdxmtR3i0F65Th381ePxXijix5CEQYp",
-	"EVtsb2KL7//DQrL3FkoIyZ6FtINuC7JcDNSiDwzUFnxUYjtgwbZQtI2mL8ILMTynUn/6FqXmW1TgtL8r",
-	"91KvsuVW4fC5M6v8+Dl0MMB4Ycaw/9EJC99lbzRF7jrrFUT9+HoW+8un+0lNpNZZlUb64LWoRc/s6tVK",
-	"Wwm6t4Hr2+r2Vuyedv8EAAD//2p/tXdOCgAA",
+	"H4sIAAAAAAAC/+xWUY/jNBD+K5bhMdr24ECnvMFyh1YCdNKie1mtoqkzTXxybGOPe7s69b+jcdI2bZOW",
+	"FXC88LTZ+pvxzPd9Y/uzVK7zzqKlKMvPMqoWO8ifty2EBm/ukUjbZveXV3xwHgNpzDiVcVUkCFRRGzC2",
+	"ztS80mmru9TJ8tVyWUh69ihLqS1hg0FuC4kWVgYzdFhcOWcQLC969wlDlSI0WNWoAkLEk/TwdDH9OIO2",
+	"kxmuFJh8DcTBhGEDhkNqjCpoT9pZWXKCRBiFW4seK/bYYpz9PPm2kAH/SDpw/w97Koo5Oq+2c5Wx83Ye",
+	"92W51UdUxC33qt8TEJ5LvQIiDM+VwQ2acwn2DU+SuQsOYBscaW5Tt+oRQ+vQ+ThaH6UYACqFgJYqJhAj",
+	"vQRbdfB0Ed8LMZF6ZM0BanSnqYpOvZSJId67QFXtXKicR3txqww1QKplGD5B5w0j39oGmmybITRS4CHd",
+	"R4YKFCUwOx4u9R6qjTMER+KcgrRt2Jq9OQ513A5rU4UMM1KRq9bJmKrfbHoP0h1Ggs7z8tqFDqgHfP9a",
+	"Tg5ozGr9DV+ezOFxplPTHlt01o8XzTfntAlbzTllyhazgp+reyblrEZjQWbInjpD3obgwsRF4eos+9cB",
+	"17KUXy0OV89iuHcWOfSWgewcjPHYjjtXnaiWMx/wszXdDhWgZTc8yHegDdbvAypna53P9EJ+AKNr4H/6",
+	"Pgr5m6N3Llkeszs+Oy2YewwbDD3gccL0H7DVyuBPQHDpxqSrhIzP420hD7M3tOCs0Zabd+t1/pqqZqPt",
+	"cN39grahVpaviiuUcshuu+K44nN6OVjbtctKaTo6EsSvYKHBDi0JZk0rTrjBEPsrdHmzvFlykWxt8FqW",
+	"8tv8UyE9UJsJW2x6Ovm7wXyIMZ9ZpLtalvJnpDHj3Er0zsae72+Wy95/loYjELw3WuX4xcfo7OHpc02P",
+	"8Ta57+MHwe8timGiRQtRxKQUYo31Dbf4+h8spPfeTAkx21Mol0wtrCORbI0hEtha0KjEOqEgJ7TdsOlF",
+	"fLYET7nU775Eqf0UCdytb4u91Ivecot4eHZOKj88Sw8GGAZmCPsXnTDzPn6xKf4Tpgvp0zyb97DBWTpz",
+	"Hz+6+vmLMHk4kygk3J7p+er8UT5Lt2D7g7D4SQSMLgWFGbBCtILfy8SYKICXk6H/Z/avzCzfSvm3KMuH",
+	"Uy1+eH+3awxt7Z3OL5IUjCxlS+TLxcI4BaZ1kco3yzdv5PZx+2cAAAD//xdMxUWVDgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

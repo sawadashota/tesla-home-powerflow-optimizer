@@ -38,15 +38,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Charge.Setting.Setting'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: Setting_saveVehicleChargeSetting
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Charge.Setting.Setting'
 components:
   schemas:
     Charge.Setting.Setting:
       type: object
       required:
         - enabled
+        - charge_start_threshold
+        - power_usage_increase_threshold
+        - power_usage_decrease_threshold
+        - update_interval
       properties:
         enabled:
           type: boolean
+        charge_start_threshold:
+          type: integer
+          minimum: 100
+        power_usage_increase_threshold:
+          type: integer
+          minimum: 100
+        power_usage_decrease_threshold:
+          type: integer
+          maximum: 100
+        update_interval:
+          type: integer
+          minimum: 10
+          description: minutes of update interval
     ChargeState:
       type: object
       required:
