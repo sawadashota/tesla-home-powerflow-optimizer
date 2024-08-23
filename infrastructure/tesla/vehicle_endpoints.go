@@ -113,7 +113,7 @@ func (c *Client) GetVehicleData(ctx context.Context, vin string) (*model.Vehicle
 			ChargerVoltage:          v.Response.ChargeState.ChargerVoltage,
 			ChargingState:           model.ChargingState(v.Response.ChargeState.ChargingState),
 			MinutesToFullCharge:     v.Response.ChargeState.MinutesToFullCharge,
-			Timestamp:               time.Unix(0, v.Response.ChargeState.Timestamp),
+			Timestamp:               time.UnixMilli(v.Response.ChargeState.Timestamp),
 			UsableBatteryLevel:      v.Response.ChargeState.UsableBatteryLevel,
 		},
 	}, nil
