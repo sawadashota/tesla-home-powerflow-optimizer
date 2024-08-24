@@ -173,7 +173,7 @@ func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state
 		return s.r.ChargeSettingRepository().SetEnabled(ctx, false)
 	}
 	if amps == 0 {
-		if state.IsCharging() {
+		if !state.IsCharging() {
 			s.r.Logger().Info("already stopped charging. nothing to do", slog.String("vin", vin))
 			return nil
 		}
