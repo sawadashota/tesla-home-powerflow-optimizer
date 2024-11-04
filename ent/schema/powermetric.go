@@ -13,7 +13,8 @@ type PowerMetric struct {
 // Fields of the PowerMetric.
 func (PowerMetric) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("surplus_watt"),
+		field.String("name"),
+		field.Int("watt"),
 		field.Time("timestamp"),
 	}
 }

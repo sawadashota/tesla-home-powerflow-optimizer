@@ -266,7 +266,7 @@ const MinimumChargeAmps = 5
 //   - 余剰電力が ChargeStartThreshold より大きい場合、充電を開始する
 func DecideChargingAmps(metric *model.PowerMetric, setting *model.ChargeSetting, state *model.VehicleChargeState) int {
 	if !state.IsCharging() {
-		if metric.SurplusWatt >= setting.ChargeStartThreshold {
+		if metric.Watt >= setting.ChargeStartThreshold {
 			return MinimumChargeAmps
 		}
 		return 0
@@ -274,13 +274,13 @@ func DecideChargingAmps(metric *model.PowerMetric, setting *model.ChargeSetting,
 	if state.ChargeCurrentRequest != state.ChargeAmps {
 		return state.ChargeCurrentRequest
 	}
-	if metric.SurplusWatt >= setting.PowerUsageIncreaseThreshold {
-		return min(state.ChargeAmps+(metric.SurplusWatt+setting.PowerUsageIncreaseThreshold)/state.ChargerVoltage, state.ChargeCurrentRequestMax)
+	if metric.Watt >= setting.PowerUsageIncreaseThreshold {
+		return min(state.ChargeAmps+(metric.Watt+setting.PowerUsageIncreaseThreshold)/state.ChargerVoltage, state.ChargeCurrentRequestMax)
 	}
-	if metric.SurplusWatt <= setting.PowerUsageDecreaseThreshold {
-		amps := state.ChargeAmps - (setting.PowerUsageDecreaseThreshold-metric.SurplusWatt)/state.ChargerVoltage
+	if metric.Watt <= setting.PowerUsageDecreaseThreshold {
+		amps := state.ChargeAmps - (setting.PowerUsageDecreaseThreshold-metric.Watt)/state.ChargerVoltage
 		if amps < MinimumChargeAmps {
-			if MinimumChargeAmps*state.ChargerVoltage+metric.SurplusWatt < setting.ChargeStartThreshold {
+			if MinimumChargeAmps*state.ChargerVoltage+metric.Watt < setting.ChargeStartThreshold {
 				return 0
 			}
 		}

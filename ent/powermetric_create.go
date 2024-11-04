@@ -21,9 +21,15 @@ type PowerMetricCreate struct {
 	hooks    []Hook
 }
 
-// SetSurplusWatt sets the "surplus_watt" field.
-func (pmc *PowerMetricCreate) SetSurplusWatt(i int) *PowerMetricCreate {
-	pmc.mutation.SetSurplusWatt(i)
+// SetName sets the "name" field.
+func (pmc *PowerMetricCreate) SetName(s string) *PowerMetricCreate {
+	pmc.mutation.SetName(s)
+	return pmc
+}
+
+// SetWatt sets the "watt" field.
+func (pmc *PowerMetricCreate) SetWatt(i int) *PowerMetricCreate {
+	pmc.mutation.SetWatt(i)
 	return pmc
 }
 
@@ -67,8 +73,11 @@ func (pmc *PowerMetricCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (pmc *PowerMetricCreate) check() error {
-	if _, ok := pmc.mutation.SurplusWatt(); !ok {
-		return &ValidationError{Name: "surplus_watt", err: errors.New(`ent: missing required field "PowerMetric.surplus_watt"`)}
+	if _, ok := pmc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PowerMetric.name"`)}
+	}
+	if _, ok := pmc.mutation.Watt(); !ok {
+		return &ValidationError{Name: "watt", err: errors.New(`ent: missing required field "PowerMetric.watt"`)}
 	}
 	if _, ok := pmc.mutation.Timestamp(); !ok {
 		return &ValidationError{Name: "timestamp", err: errors.New(`ent: missing required field "PowerMetric.timestamp"`)}
@@ -99,9 +108,13 @@ func (pmc *PowerMetricCreate) createSpec() (*PowerMetric, *sqlgraph.CreateSpec) 
 		_node = &PowerMetric{config: pmc.config}
 		_spec = sqlgraph.NewCreateSpec(powermetric.Table, sqlgraph.NewFieldSpec(powermetric.FieldID, field.TypeInt))
 	)
-	if value, ok := pmc.mutation.SurplusWatt(); ok {
-		_spec.SetField(powermetric.FieldSurplusWatt, field.TypeInt, value)
-		_node.SurplusWatt = value
+	if value, ok := pmc.mutation.Name(); ok {
+		_spec.SetField(powermetric.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := pmc.mutation.Watt(); ok {
+		_spec.SetField(powermetric.FieldWatt, field.TypeInt, value)
+		_node.Watt = value
 	}
 	if value, ok := pmc.mutation.Timestamp(); ok {
 		_spec.SetField(powermetric.FieldTimestamp, field.TypeTime, value)

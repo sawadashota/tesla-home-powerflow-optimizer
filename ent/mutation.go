@@ -3251,16 +3251,17 @@ func (m *GrantMutation) ResetEdge(name string) error {
 // PowerMetricMutation represents an operation that mutates the PowerMetric nodes in the graph.
 type PowerMetricMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	surplus_watt    *int
-	addsurplus_watt *int
-	timestamp       *time.Time
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*PowerMetric, error)
-	predicates      []predicate.PowerMetric
+	op            Op
+	typ           string
+	id            *int
+	name          *string
+	watt          *int
+	addwatt       *int
+	timestamp     *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*PowerMetric, error)
+	predicates    []predicate.PowerMetric
 }
 
 var _ ent.Mutation = (*PowerMetricMutation)(nil)
@@ -3361,60 +3362,96 @@ func (m *PowerMetricMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetSurplusWatt sets the "surplus_watt" field.
-func (m *PowerMetricMutation) SetSurplusWatt(i int) {
-	m.surplus_watt = &i
-	m.addsurplus_watt = nil
+// SetName sets the "name" field.
+func (m *PowerMetricMutation) SetName(s string) {
+	m.name = &s
 }
 
-// SurplusWatt returns the value of the "surplus_watt" field in the mutation.
-func (m *PowerMetricMutation) SurplusWatt() (r int, exists bool) {
-	v := m.surplus_watt
+// Name returns the value of the "name" field in the mutation.
+func (m *PowerMetricMutation) Name() (r string, exists bool) {
+	v := m.name
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSurplusWatt returns the old "surplus_watt" field's value of the PowerMetric entity.
+// OldName returns the old "name" field's value of the PowerMetric entity.
 // If the PowerMetric object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PowerMetricMutation) OldSurplusWatt(ctx context.Context) (v int, err error) {
+func (m *PowerMetricMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSurplusWatt is only allowed on UpdateOne operations")
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSurplusWatt requires an ID field in the mutation")
+		return v, errors.New("OldName requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSurplusWatt: %w", err)
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
 	}
-	return oldValue.SurplusWatt, nil
+	return oldValue.Name, nil
 }
 
-// AddSurplusWatt adds i to the "surplus_watt" field.
-func (m *PowerMetricMutation) AddSurplusWatt(i int) {
-	if m.addsurplus_watt != nil {
-		*m.addsurplus_watt += i
-	} else {
-		m.addsurplus_watt = &i
-	}
+// ResetName resets all changes to the "name" field.
+func (m *PowerMetricMutation) ResetName() {
+	m.name = nil
 }
 
-// AddedSurplusWatt returns the value that was added to the "surplus_watt" field in this mutation.
-func (m *PowerMetricMutation) AddedSurplusWatt() (r int, exists bool) {
-	v := m.addsurplus_watt
+// SetWatt sets the "watt" field.
+func (m *PowerMetricMutation) SetWatt(i int) {
+	m.watt = &i
+	m.addwatt = nil
+}
+
+// Watt returns the value of the "watt" field in the mutation.
+func (m *PowerMetricMutation) Watt() (r int, exists bool) {
+	v := m.watt
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetSurplusWatt resets all changes to the "surplus_watt" field.
-func (m *PowerMetricMutation) ResetSurplusWatt() {
-	m.surplus_watt = nil
-	m.addsurplus_watt = nil
+// OldWatt returns the old "watt" field's value of the PowerMetric entity.
+// If the PowerMetric object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PowerMetricMutation) OldWatt(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWatt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWatt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWatt: %w", err)
+	}
+	return oldValue.Watt, nil
+}
+
+// AddWatt adds i to the "watt" field.
+func (m *PowerMetricMutation) AddWatt(i int) {
+	if m.addwatt != nil {
+		*m.addwatt += i
+	} else {
+		m.addwatt = &i
+	}
+}
+
+// AddedWatt returns the value that was added to the "watt" field in this mutation.
+func (m *PowerMetricMutation) AddedWatt() (r int, exists bool) {
+	v := m.addwatt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetWatt resets all changes to the "watt" field.
+func (m *PowerMetricMutation) ResetWatt() {
+	m.watt = nil
+	m.addwatt = nil
 }
 
 // SetTimestamp sets the "timestamp" field.
@@ -3487,9 +3524,12 @@ func (m *PowerMetricMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PowerMetricMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m.surplus_watt != nil {
-		fields = append(fields, powermetric.FieldSurplusWatt)
+	fields := make([]string, 0, 3)
+	if m.name != nil {
+		fields = append(fields, powermetric.FieldName)
+	}
+	if m.watt != nil {
+		fields = append(fields, powermetric.FieldWatt)
 	}
 	if m.timestamp != nil {
 		fields = append(fields, powermetric.FieldTimestamp)
@@ -3502,8 +3542,10 @@ func (m *PowerMetricMutation) Fields() []string {
 // schema.
 func (m *PowerMetricMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case powermetric.FieldSurplusWatt:
-		return m.SurplusWatt()
+	case powermetric.FieldName:
+		return m.Name()
+	case powermetric.FieldWatt:
+		return m.Watt()
 	case powermetric.FieldTimestamp:
 		return m.Timestamp()
 	}
@@ -3515,8 +3557,10 @@ func (m *PowerMetricMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *PowerMetricMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case powermetric.FieldSurplusWatt:
-		return m.OldSurplusWatt(ctx)
+	case powermetric.FieldName:
+		return m.OldName(ctx)
+	case powermetric.FieldWatt:
+		return m.OldWatt(ctx)
 	case powermetric.FieldTimestamp:
 		return m.OldTimestamp(ctx)
 	}
@@ -3528,12 +3572,19 @@ func (m *PowerMetricMutation) OldField(ctx context.Context, name string) (ent.Va
 // type.
 func (m *PowerMetricMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case powermetric.FieldSurplusWatt:
+	case powermetric.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case powermetric.FieldWatt:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSurplusWatt(v)
+		m.SetWatt(v)
 		return nil
 	case powermetric.FieldTimestamp:
 		v, ok := value.(time.Time)
@@ -3550,8 +3601,8 @@ func (m *PowerMetricMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *PowerMetricMutation) AddedFields() []string {
 	var fields []string
-	if m.addsurplus_watt != nil {
-		fields = append(fields, powermetric.FieldSurplusWatt)
+	if m.addwatt != nil {
+		fields = append(fields, powermetric.FieldWatt)
 	}
 	return fields
 }
@@ -3561,8 +3612,8 @@ func (m *PowerMetricMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PowerMetricMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case powermetric.FieldSurplusWatt:
-		return m.AddedSurplusWatt()
+	case powermetric.FieldWatt:
+		return m.AddedWatt()
 	}
 	return nil, false
 }
@@ -3572,12 +3623,12 @@ func (m *PowerMetricMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PowerMetricMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case powermetric.FieldSurplusWatt:
+	case powermetric.FieldWatt:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddSurplusWatt(v)
+		m.AddWatt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PowerMetric numeric field %s", name)
@@ -3606,8 +3657,11 @@ func (m *PowerMetricMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *PowerMetricMutation) ResetField(name string) error {
 	switch name {
-	case powermetric.FieldSurplusWatt:
-		m.ResetSurplusWatt()
+	case powermetric.FieldName:
+		m.ResetName()
+		return nil
+	case powermetric.FieldWatt:
+		m.ResetWatt()
 		return nil
 	case powermetric.FieldTimestamp:
 		m.ResetTimestamp()

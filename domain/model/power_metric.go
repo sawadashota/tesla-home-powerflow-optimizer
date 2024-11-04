@@ -7,8 +7,9 @@ import (
 )
 
 type PowerMetric struct {
-	SurplusWatt int       `validate:"required"`
-	Timestamp   time.Time `validate:"required"`
+	Name      string    `validate:"required"`
+	Watt      int       `validate:"required"`
+	Timestamp time.Time `validate:"required"`
 }
 
 func (m *PowerMetric) Validate() error {
@@ -63,7 +64,7 @@ func (l PowerMetricList) MaximumInterval() time.Duration {
 	sorted := l.Sort()
 	var maximum time.Duration
 	for i := 1; i < len(sorted); i++ {
-		interval := sorted[i-1].Timestamp.Sub(sorted[i].Timestamp)
+		interval := sorted[i].Timestamp.Sub(sorted[i-1].Timestamp)
 		if interval > maximum {
 			maximum = interval
 		}

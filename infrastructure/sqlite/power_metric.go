@@ -27,7 +27,8 @@ func newPowerMetricRepository(client *ent.Client) *powerMetricRepository {
 
 func (r *powerMetricRepository) CreateOne(ctx context.Context, powerMetric *model.PowerMetric) error {
 	_, err := r.client.PowerMetric.Create().
-		SetSurplusWatt(powerMetric.SurplusWatt).
+		SetName(powerMetric.Name).
+		SetWatt(powerMetric.Watt).
 		SetTimestamp(powerMetric.Timestamp).
 		Save(ctx)
 	return err
@@ -44,8 +45,9 @@ func (r *powerMetricRepository) FindLatestN(ctx context.Context, n int) (model.P
 	res := make(model.PowerMetricList, 0, len(founds))
 	for _, found := range founds {
 		res = append(res, &model.PowerMetric{
-			SurplusWatt: found.SurplusWatt,
-			Timestamp:   found.Timestamp,
+			Name:      found.Name,
+			Watt:      found.Watt,
+			Timestamp: found.Timestamp,
 		})
 	}
 	return res, nil

@@ -55,9 +55,14 @@ func IDLTE(id int) predicate.PowerMetric {
 	return predicate.PowerMetric(sql.FieldLTE(FieldID, id))
 }
 
-// SurplusWatt applies equality check predicate on the "surplus_watt" field. It's identical to SurplusWattEQ.
-func SurplusWatt(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldEQ(FieldSurplusWatt, v))
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldEQ(FieldName, v))
+}
+
+// Watt applies equality check predicate on the "watt" field. It's identical to WattEQ.
+func Watt(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldEQ(FieldWatt, v))
 }
 
 // Timestamp applies equality check predicate on the "timestamp" field. It's identical to TimestampEQ.
@@ -65,44 +70,109 @@ func Timestamp(v time.Time) predicate.PowerMetric {
 	return predicate.PowerMetric(sql.FieldEQ(FieldTimestamp, v))
 }
 
-// SurplusWattEQ applies the EQ predicate on the "surplus_watt" field.
-func SurplusWattEQ(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldEQ(FieldSurplusWatt, v))
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldEQ(FieldName, v))
 }
 
-// SurplusWattNEQ applies the NEQ predicate on the "surplus_watt" field.
-func SurplusWattNEQ(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldNEQ(FieldSurplusWatt, v))
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldNEQ(FieldName, v))
 }
 
-// SurplusWattIn applies the In predicate on the "surplus_watt" field.
-func SurplusWattIn(vs ...int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldIn(FieldSurplusWatt, vs...))
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldIn(FieldName, vs...))
 }
 
-// SurplusWattNotIn applies the NotIn predicate on the "surplus_watt" field.
-func SurplusWattNotIn(vs ...int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldNotIn(FieldSurplusWatt, vs...))
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldNotIn(FieldName, vs...))
 }
 
-// SurplusWattGT applies the GT predicate on the "surplus_watt" field.
-func SurplusWattGT(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldGT(FieldSurplusWatt, v))
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldGT(FieldName, v))
 }
 
-// SurplusWattGTE applies the GTE predicate on the "surplus_watt" field.
-func SurplusWattGTE(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldGTE(FieldSurplusWatt, v))
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldGTE(FieldName, v))
 }
 
-// SurplusWattLT applies the LT predicate on the "surplus_watt" field.
-func SurplusWattLT(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldLT(FieldSurplusWatt, v))
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldLT(FieldName, v))
 }
 
-// SurplusWattLTE applies the LTE predicate on the "surplus_watt" field.
-func SurplusWattLTE(v int) predicate.PowerMetric {
-	return predicate.PowerMetric(sql.FieldLTE(FieldSurplusWatt, v))
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldContainsFold(FieldName, v))
+}
+
+// WattEQ applies the EQ predicate on the "watt" field.
+func WattEQ(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldEQ(FieldWatt, v))
+}
+
+// WattNEQ applies the NEQ predicate on the "watt" field.
+func WattNEQ(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldNEQ(FieldWatt, v))
+}
+
+// WattIn applies the In predicate on the "watt" field.
+func WattIn(vs ...int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldIn(FieldWatt, vs...))
+}
+
+// WattNotIn applies the NotIn predicate on the "watt" field.
+func WattNotIn(vs ...int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldNotIn(FieldWatt, vs...))
+}
+
+// WattGT applies the GT predicate on the "watt" field.
+func WattGT(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldGT(FieldWatt, v))
+}
+
+// WattGTE applies the GTE predicate on the "watt" field.
+func WattGTE(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldGTE(FieldWatt, v))
+}
+
+// WattLT applies the LT predicate on the "watt" field.
+func WattLT(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldLT(FieldWatt, v))
+}
+
+// WattLTE applies the LTE predicate on the "watt" field.
+func WattLTE(v int) predicate.PowerMetric {
+	return predicate.PowerMetric(sql.FieldLTE(FieldWatt, v))
 }
 
 // TimestampEQ applies the EQ predicate on the "timestamp" field.

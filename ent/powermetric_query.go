@@ -263,12 +263,12 @@ func (pmq *PowerMetricQuery) Clone() *PowerMetricQuery {
 // Example:
 //
 //	var v []struct {
-//		SurplusWatt int `json:"surplus_watt,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.PowerMetric.Query().
-//		GroupBy(powermetric.FieldSurplusWatt).
+//		GroupBy(powermetric.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pmq *PowerMetricQuery) GroupBy(field string, fields ...string) *PowerMetricGroupBy {
@@ -286,11 +286,11 @@ func (pmq *PowerMetricQuery) GroupBy(field string, fields ...string) *PowerMetri
 // Example:
 //
 //	var v []struct {
-//		SurplusWatt int `json:"surplus_watt,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.PowerMetric.Query().
-//		Select(powermetric.FieldSurplusWatt).
+//		Select(powermetric.FieldName).
 //		Scan(ctx, &v)
 func (pmq *PowerMetricQuery) Select(fields ...string) *PowerMetricSelect {
 	pmq.ctx.Fields = append(pmq.ctx.Fields, fields...)

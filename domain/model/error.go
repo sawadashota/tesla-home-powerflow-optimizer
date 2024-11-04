@@ -12,4 +12,6 @@ const (
 	ErrCodeTooManyRequests ErrorCode = "TooManyRequests"
 
 	ErrCodeDeviceOffline ErrorCode = "DeviceOffline"
+
+	ErrCodeMetricNotFound ErrorCode = "MetricNotFound"
 )

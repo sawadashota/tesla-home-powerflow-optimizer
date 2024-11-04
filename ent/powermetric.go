@@ -18,8 +18,10 @@ type PowerMetric struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// SurplusWatt holds the value of the "surplus_watt" field.
-	SurplusWatt int `json:"surplus_watt,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Watt holds the value of the "watt" field.
+	Watt int `json:"watt,omitempty"`
 	// Timestamp holds the value of the "timestamp" field.
 	Timestamp    time.Time `json:"timestamp,omitempty"`
 	selectValues sql.SelectValues
@@ -30,8 +32,10 @@ func (*PowerMetric) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case powermetric.FieldID, powermetric.FieldSurplusWatt:
+		case powermetric.FieldID, powermetric.FieldWatt:
 			values[i] = new(sql.NullInt64)
+		case powermetric.FieldName:
+			values[i] = new(sql.NullString)
 		case powermetric.FieldTimestamp:
 			values[i] = new(sql.NullTime)
 		default:
@@ -55,11 +59,17 @@ func (pm *PowerMetric) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			pm.ID = int(value.Int64)
-		case powermetric.FieldSurplusWatt:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field surplus_watt", values[i])
+		case powermetric.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				pm.SurplusWatt = int(value.Int64)
+				pm.Name = value.String
+			}
+		case powermetric.FieldWatt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field watt", values[i])
+			} else if value.Valid {
+				pm.Watt = int(value.Int64)
 			}
 		case powermetric.FieldTimestamp:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -103,8 +113,11 @@ func (pm *PowerMetric) String() string {
 	var builder strings.Builder
 	builder.WriteString("PowerMetric(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pm.ID))
-	builder.WriteString("surplus_watt=")
-	builder.WriteString(fmt.Sprintf("%v", pm.SurplusWatt))
+	builder.WriteString("name=")
+	builder.WriteString(pm.Name)
+	builder.WriteString(", ")
+	builder.WriteString("watt=")
+	builder.WriteString(fmt.Sprintf("%v", pm.Watt))
 	builder.WriteString(", ")
 	builder.WriteString("timestamp=")
 	builder.WriteString(pm.Timestamp.Format(time.ANSIC))

@@ -9,6 +9,7 @@ import (
 type (
 	Collector interface {
 		GetSurplusPower(ctx context.Context) (*model.PowerMetric, error)
+		GetEVUsagePower(ctx context.Context) (*model.PowerMetric, error)
 	}
 	Provider interface {
 		Collector() Collector
