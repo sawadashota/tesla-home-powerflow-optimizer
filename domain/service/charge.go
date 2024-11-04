@@ -100,7 +100,7 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		}
 	}
 
-	state, err := s.describeChargeState(ctx, s.r.AppConfig().TeslaVIN)
+	state, err := s.DescribeChargeState(ctx, s.r.AppConfig().TeslaVIN)
 	if err != nil {
 		return err
 	}
@@ -145,6 +145,10 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 
 func (s *ChargeService) DescribeSetting(ctx context.Context) (*model.ChargeSetting, error) {
 	return s.r.ChargeSettingRepository().FindOne(ctx)
+}
+
+func (s *ChargeService) SetEnabled(ctx context.Context, enabled bool) error {
+	return s.r.ChargeSettingRepository().SetEnabled(ctx, enabled)
 }
 
 func (s *ChargeService) SaveSetting(ctx context.Context, setting *model.ChargeSetting) error {
@@ -208,7 +212,7 @@ func (s *ChargeService) updateChargeState(ctx context.Context, vin string, state
 	return s.r.ChargeCommandHistoryRepository().CreateOne(ctx, history)
 }
 
-func (s *ChargeService) describeChargeState(ctx context.Context, vin string) (*model.VehicleChargeState, error) {
+func (s *ChargeService) DescribeChargeState(ctx context.Context, vin string) (*model.VehicleChargeState, error) {
 	state, err := s.r.VehicleChargeStateCache().FindOne(ctx, vin)
 	if err == nil {
 		return state, nil

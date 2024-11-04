@@ -64,8 +64,14 @@ func newServeCommand() *cobra.Command {
 
 			w := worker.New(r)
 			go func() {
-				r.Logger().Info("starting worker")
-				if err := w.Run(ctx); err != nil {
+				r.Logger().Info("starting surplus metrics collector worker")
+				if err := w.RunSurplusPowerCollector(ctx); err != nil {
+					r.Logger().Error(err.Error())
+				}
+			}()
+			go func() {
+				r.Logger().Info("starting plug-in detection worker")
+				if err := w.RunPlugInWatcher(ctx); err != nil {
 					r.Logger().Error(err.Error())
 				}
 			}()
