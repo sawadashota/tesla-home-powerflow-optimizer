@@ -3,9 +3,8 @@ package sqlite
 import (
 	"context"
 
-	"github.com/morikuni/failure/v2"
-
 	"entgo.io/ent/dialect/sql"
+	"github.com/morikuni/failure/v2"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"

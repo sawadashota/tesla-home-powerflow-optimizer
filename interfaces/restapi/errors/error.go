@@ -9,7 +9,6 @@ import (
 	"github.com/morikuni/failure/v2"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/pkg/restapi"
 )
 

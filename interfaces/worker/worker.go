@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/service"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/driver/configuration"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
 )
@@ -37,7 +36,7 @@ func (w *Worker) Run(ctx context.Context) error {
 	interval := w.r.AppConfig().CollectorIntervalDuration()
 	w.r.Logger().Info(fmt.Sprintf("collector interval: %s", interval))
 	ticker := time.NewTicker(interval)
-	var perform = func() {
+	perform := func() {
 		w.r.Logger().Info("collecting surplus power...")
 		if err := w.perform(ctx); err != nil {
 			w.r.Logger().Error("failed to collect", logx.ErrorAttr(err))

@@ -45,7 +45,7 @@ type ChargeState struct {
 	ChargePortLatch           string  `json:"charge_port_latch"`
 	ChargeRate                float32 `json:"charge_rate"`
 	ChargerActualCurrent      int     `json:"charger_actual_current"`
-	//ChargerPhases                  any     `json:"charger_phases"`
+	// ChargerPhases                  any     `json:"charger_phases"`
 	ChargerPilotCurrent   int     `json:"charger_pilot_current"`
 	ChargerPower          int     `json:"charger_power"`
 	ChargerVoltage        int     `json:"charger_voltage"`
@@ -57,11 +57,11 @@ type ChargeState struct {
 	FastChargerType       string  `json:"fast_charger_type"`
 	IdealBatteryRange     float32 `json:"ideal_battery_range"`
 	ManagedChargingActive bool    `json:"managed_charging_active"`
-	//ManagedChargingStartTime       any     `json:"managed_charging_start_time"`
+	// ManagedChargingStartTime       any     `json:"managed_charging_start_time"`
 	ManagedChargingUserCanceled bool `json:"managed_charging_user_canceled"`
 	MaxRangeChargeCounter       int  `json:"max_range_charge_counter"`
 	MinutesToFullCharge         int  `json:"minutes_to_full_charge"`
-	//NotEnoughPowerToHeat           any     `json:"not_enough_power_to_heat"`
+	// NotEnoughPowerToHeat           any     `json:"not_enough_power_to_heat"`
 	OffPeakChargingEnabled   bool   `json:"off_peak_charging_enabled"`
 	OffPeakChargingTimes     string `json:"off_peak_charging_times"`
 	OffPeakHoursEndTime      int    `json:"off_peak_hours_end_time"`
@@ -69,7 +69,7 @@ type ChargeState struct {
 	PreconditioningTimes     string `json:"preconditioning_times"`
 	ScheduledChargingMode    string `json:"scheduled_charging_mode"`
 	ScheduledChargingPending bool   `json:"scheduled_charging_pending"`
-	//ScheduledChargingStartTime     any     `json:"scheduled_charging_start_time"`
+	// ScheduledChargingStartTime     any     `json:"scheduled_charging_start_time"`
 	ScheduledDepartureTime         int     `json:"scheduled_departure_time"`
 	ScheduledDepartureTimeMinutes  int     `json:"scheduled_departure_time_minutes"`
 	SuperchargerSessionTripPlanner bool    `json:"supercharger_session_trip_planner"`
@@ -77,8 +77,9 @@ type ChargeState struct {
 	Timestamp                      int64   `json:"timestamp"`
 	TripCharging                   bool    `json:"trip_charging"`
 	UsableBatteryLevel             int     `json:"usable_battery_level"`
-	//UserChargeEnableRequest        any     `json:"user_charge_enable_request"`
+	// UserChargeEnableRequest        any     `json:"user_charge_enable_request"`
 }
+
 type ClimateState struct {
 	AllowCabinOverheatProtection           bool    `json:"allow_cabin_overheat_protection"`
 	AutoSeatClimateLeft                    bool    `json:"auto_seat_climate_left"`
@@ -298,7 +299,7 @@ type VehicleDataResponseInner struct {
 	UserID    int    `json:"user_id"`
 	VehicleID int    `json:"vehicle_id"`
 	Vin       string `json:"vin"`
-	//Color           any            `json:"color"`
+	// Color           any            `json:"color"`
 	AccessType      string         `json:"access_type"`
 	GranularAccess  GranularAccess `json:"granular_access"`
 	Tokens          []string       `json:"tokens"`
@@ -307,8 +308,8 @@ type VehicleDataResponseInner struct {
 	IDS             string         `json:"id_s"`
 	CalendarEnabled bool           `json:"calendar_enabled"`
 	APIVersion      int            `json:"api_version"`
-	//BackseatToken          any            `json:"backseat_token"`
-	//BackseatTokenUpdatedAt any            `json:"backseat_token_updated_at"`
+	// BackseatToken          any            `json:"backseat_token"`
+	// BackseatTokenUpdatedAt any            `json:"backseat_token_updated_at"`
 	ChargeState   ChargeState   `json:"charge_state"`
 	ClimateState  ClimateState  `json:"climate_state"`
 	DriveState    DriveState    `json:"drive_state"`

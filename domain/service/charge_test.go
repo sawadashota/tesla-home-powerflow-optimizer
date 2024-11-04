@@ -10,7 +10,7 @@ import (
 )
 
 func TestDecideChargingAmps(t *testing.T) {
-	var newPowerMetric = func(surplusWatt int) *model.PowerMetric {
+	newPowerMetric := func(surplusWatt int) *model.PowerMetric {
 		return &model.PowerMetric{
 			SurplusWatt: surplusWatt,
 			Timestamp:   time.Now(),
@@ -22,7 +22,7 @@ func TestDecideChargingAmps(t *testing.T) {
 		maxAmps    = 16
 	)
 	type ChargeStateOption func(*model.VehicleChargeState)
-	var newChargeState = func(opts ...ChargeStateOption) *model.VehicleChargeState {
+	newChargeState := func(opts ...ChargeStateOption) *model.VehicleChargeState {
 		v := &model.VehicleChargeState{
 			VIN:                     randx.MustString(17, randx.Alpha),
 			BatteryLevel:            73,

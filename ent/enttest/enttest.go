@@ -5,13 +5,11 @@ package enttest
 import (
 	"context"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent"
-	// required by schema hooks.
-	_ "github.com/sawadashota/tesla-home-powerflow-optimizer/ent/runtime"
-
 	"entgo.io/ent/dialect/sql/schema"
 
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/migrate"
+	_ "github.com/sawadashota/tesla-home-powerflow-optimizer/ent/runtime"
 )
 
 type (

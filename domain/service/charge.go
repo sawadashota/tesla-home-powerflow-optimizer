@@ -107,7 +107,7 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 
 	// check if the decision is stable
 	var decision int
-	var decisions = make(map[int]struct{}, metricCount)
+	decisions := make(map[int]struct{}, metricCount)
 	for _, metric := range metrics {
 		decision = DecideChargingAmps(metric, setting, state)
 		decisions[decision] = struct{}{}

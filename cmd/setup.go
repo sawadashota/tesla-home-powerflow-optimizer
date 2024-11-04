@@ -6,7 +6,6 @@ import (
 	"github.com/morikuni/failure/v2"
 
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/internal/logx"
 )

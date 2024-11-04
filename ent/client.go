@@ -9,8 +9,6 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/migrate"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -19,6 +17,7 @@ import (
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargesetting"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/chargestatecache"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/grant"
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/migrate"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent/powermetric"
 )
 

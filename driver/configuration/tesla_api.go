@@ -3,11 +3,9 @@ package configuration
 import (
 	"strings"
 
-	"github.com/teslamotors/vehicle-command/pkg/protocol"
-
-	"golang.org/x/oauth2"
-
 	"github.com/kelseyhightower/envconfig"
+	"github.com/teslamotors/vehicle-command/pkg/protocol"
+	"golang.org/x/oauth2"
 )
 
 type (

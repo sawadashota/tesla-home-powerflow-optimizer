@@ -23,7 +23,7 @@ type Request struct {
 }
 
 // New creates a new DigestClient
-func New(user, password string, algorithm string) *Request {
+func New(user, password, algorithm string) *Request {
 	return &Request{
 		user:      user,
 		password:  password,

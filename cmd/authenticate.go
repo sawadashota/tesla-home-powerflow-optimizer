@@ -11,9 +11,7 @@ import (
 	"time"
 
 	"github.com/lestrrat-go/jwx/jwk"
-
 	"github.com/lestrrat-go/jwx/jwt"
-
 	"github.com/spf13/cobra"
 	"github.com/toqueteos/webbrowser"
 	"golang.org/x/oauth2"
@@ -90,7 +88,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 
 	conf := r.TeslaOAuthConfig().Config()
 	fmt.Println("ClientID:", r.TeslaOAuthConfig().OAuthClientID)
-	var generateAuthCodeURL = func() (string, []rune, string, error) {
+	generateAuthCodeURL := func() (string, []rune, string, error) {
 		state, err := randx.RuneSequence(24, randx.AlphaLower)
 		if err != nil {
 			return "", nil, "", err
@@ -107,7 +105,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 			oauth2.SetAuthURLParam("audience", r.TeslaOAuthConfig().Audience()),
 			oauth2.SetAuthURLParam("nonce", string(nonce)),
 			oauth2.S256ChallengeOption(verifier),
-			//oauth2.SetAuthURLParam("prompt", strings.Join(prompt, "+")),
+			// oauth2.SetAuthURLParam("prompt", strings.Join(prompt, "+")),
 		)
 		return authCodeURL, state, verifier, nil
 	}
@@ -128,7 +126,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 		Handler: router,
 	}
 
-	var onDone = func() {
+	onDone := func() {
 		fmt.Println("Shutting down Sign in with Tesla server...")
 		go func() {
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -210,9 +208,9 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 			Expiry:       token.Expiry,
 		}
 		fmt.Printf("Subject:\n\t%s\n", grant.Subject)
-		//fmt.Printf("Access Token:\n\t%s\n", grant.AccessToken)
-		//fmt.Printf("Refresh Token:\n\t%s\n", grant.RefreshToken)
-		//fmt.Printf("Expires in:\n\t%s\n", grant.Expiry.Format(time.RFC3339))
+		// fmt.Printf("Access Token:\n\t%s\n", grant.AccessToken)
+		// fmt.Printf("Refresh Token:\n\t%s\n", grant.RefreshToken)
+		// fmt.Printf("Expires in:\n\t%s\n", grant.Expiry.Format(time.RFC3339))
 
 		w.WriteHeader(http.StatusOK)
 		_ = oidcCompleteHTML.Execute(w, nil)
@@ -238,7 +236,7 @@ func signInWithTesla(ctx context.Context, r driver.OidcRegistry) (*model.Grant, 
 // jwks_uri is different between third-party and the other.
 // third-party: /discovery/thirdparty/keys
 // the other: /discovery/keys
-func parseIDToken(ctx context.Context, issuer string, idToken string) (jwt.Token, error) {
+func parseIDToken(ctx context.Context, issuer, idToken string) (jwt.Token, error) {
 	set, err := jwk.Fetch(ctx, issuer+"/discovery/thirdparty/keys")
 	if err != nil {
 		return nil, err

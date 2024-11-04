@@ -10,6 +10,9 @@ export PATH := $(GOBIN):${PATH}
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 API_SPEC := ./docs/openapi.yaml
 
+GOIMPORTS := go run github.com/rinchsan/gosimports/cmd/gosimports@latest
+GOFUMPT := go run mvdan.cc/gofumpt@latest
+
 .PHONY: bootstrap
 bootstrap: ## Bootstrap the project
 	npm install
@@ -24,7 +27,8 @@ tsp: ## Generate tsp
 
 .PHONY: fmt
 fmt: ## Format sources
-	go run golang.org/x/tools/cmd/goimports@latest -local $(PKG) -w .
+	$(GOIMPORTS) -local $(PKG) -w .
+	$(GOFUMPT) -w -extra .
 
 .PHONY: authenticate
 authenticate: ## Sign in with Tesla

@@ -7,11 +7,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/morikuni/failure/v2"
 
-	entpowermetric "github.com/sawadashota/tesla-home-powerflow-optimizer/ent/powermetric"
-
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/repository"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/ent"
+	entpowermetric "github.com/sawadashota/tesla-home-powerflow-optimizer/ent/powermetric"
 )
 
 type powerMetricRepository struct {

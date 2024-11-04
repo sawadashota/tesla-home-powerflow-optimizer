@@ -1,9 +1,8 @@
 package model
 
 import (
-	"github.com/morikuni/failure/v2"
-
 	"github.com/go-playground/validator/v10"
+	"github.com/morikuni/failure/v2"
 )
 
 type Validator interface {

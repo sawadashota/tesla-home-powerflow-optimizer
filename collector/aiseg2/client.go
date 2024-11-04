@@ -6,12 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector"
-
+	"github.com/antchfx/htmlquery"
 	"golang.org/x/net/html"
 
-	"github.com/antchfx/htmlquery"
-
+	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/collector/aiseg2/digest"
 	"github.com/sawadashota/tesla-home-powerflow-optimizer/domain/model"
 )
