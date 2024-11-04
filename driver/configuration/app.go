@@ -8,11 +8,12 @@ import (
 
 type (
 	AppConfig struct {
-		LogLevel          string `envconfig:"LOG_LEVEL" default:"INFO"`
-		TeslaVIN          string `envconfig:"TESLA_VIN" required:"true"`
-		SqliteDSN         string `envconfig:"SQLITE_DSN" default:"file:sqlite.db?cache=shared&_fk=1"`
-		Collector         string `envconfig:"COLLECTOR" default:"aiseg2"`
-		CollectorInterval int    `envconfig:"COLLECTOR_INTERVAL" default:"5"`
+		LogLevel               string `envconfig:"LOG_LEVEL" default:"INFO"`
+		TeslaVIN               string `envconfig:"TESLA_VIN" required:"true"`
+		SqliteDSN              string `envconfig:"SQLITE_DSN" default:"file:sqlite.db?cache=shared&_fk=1"`
+		Collector              string `envconfig:"COLLECTOR" default:"aiseg2"`
+		CollectorInterval      int    `envconfig:"SURPLUS_METRICS_COLLECTOR_INTERVAL" default:"300"`
+		EVPowerWatcherInterval int    `envconfig:"EV_POWER_WATCHER_INTERVAL" default:"10"`
 	}
 	AppConfigProvider interface {
 		AppConfig() *AppConfig
@@ -31,7 +32,11 @@ func NewAppConfig() (*AppConfig, error) {
 }
 
 func (c *AppConfig) CollectorIntervalDuration() time.Duration {
-	return time.Duration(c.CollectorInterval) * time.Minute
+	return time.Duration(c.CollectorInterval) * time.Second
+}
+
+func (c *AppConfig) EVPowerWatcherIntervalDuration() time.Duration {
+	return time.Duration(c.EVPowerWatcherInterval) * time.Second
 }
 
 func NewAppConfigProvider(config *AppConfig) AppConfigProvider {

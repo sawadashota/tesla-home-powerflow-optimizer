@@ -81,7 +81,8 @@ var (
 	// PowerMetricsColumns holds the columns for the "power_metrics" table.
 	PowerMetricsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "surplus_watt", Type: field.TypeInt},
+		{Name: "name", Type: field.TypeString},
+		{Name: "watt", Type: field.TypeInt},
 		{Name: "timestamp", Type: field.TypeTime},
 	}
 	// PowerMetricsTable holds the schema information for the "power_metrics" table.

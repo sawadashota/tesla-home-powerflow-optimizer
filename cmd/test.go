@@ -78,12 +78,21 @@ func newTestCollectorCmd() *cobra.Command {
 			ctx, cancel := context.WithTimeout(cmd.Context(), time.Minute)
 			defer cancel()
 
-			metric, err := r.Collector().GetSurplusPower(ctx)
-			if err != nil {
-				return err
+			{
+				metric, err := r.Collector().GetSurplusPower(ctx)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("surplus power: %d W\n", metric.Watt)
+			}
+			{
+				metric, err := r.Collector().GetEVUsagePower(ctx)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("EV usage power: %d W\n", metric.Watt)
 			}
 
-			fmt.Printf("surplus power: %d W\n", metric.SurplusWatt)
 			return nil
 		},
 	}

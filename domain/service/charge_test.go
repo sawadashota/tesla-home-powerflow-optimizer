@@ -10,10 +10,10 @@ import (
 )
 
 func TestDecideChargingAmps(t *testing.T) {
-	newPowerMetric := func(surplusWatt int) *model.PowerMetric {
+	newPowerMetric := func(watt int) *model.PowerMetric {
 		return &model.PowerMetric{
-			SurplusWatt: surplusWatt,
-			Timestamp:   time.Now(),
+			Watt:      watt,
+			Timestamp: time.Now(),
 		}
 	}
 

@@ -29,24 +29,38 @@ func (pmu *PowerMetricUpdate) Where(ps ...predicate.PowerMetric) *PowerMetricUpd
 	return pmu
 }
 
-// SetSurplusWatt sets the "surplus_watt" field.
-func (pmu *PowerMetricUpdate) SetSurplusWatt(i int) *PowerMetricUpdate {
-	pmu.mutation.ResetSurplusWatt()
-	pmu.mutation.SetSurplusWatt(i)
+// SetName sets the "name" field.
+func (pmu *PowerMetricUpdate) SetName(s string) *PowerMetricUpdate {
+	pmu.mutation.SetName(s)
 	return pmu
 }
 
-// SetNillableSurplusWatt sets the "surplus_watt" field if the given value is not nil.
-func (pmu *PowerMetricUpdate) SetNillableSurplusWatt(i *int) *PowerMetricUpdate {
-	if i != nil {
-		pmu.SetSurplusWatt(*i)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pmu *PowerMetricUpdate) SetNillableName(s *string) *PowerMetricUpdate {
+	if s != nil {
+		pmu.SetName(*s)
 	}
 	return pmu
 }
 
-// AddSurplusWatt adds i to the "surplus_watt" field.
-func (pmu *PowerMetricUpdate) AddSurplusWatt(i int) *PowerMetricUpdate {
-	pmu.mutation.AddSurplusWatt(i)
+// SetWatt sets the "watt" field.
+func (pmu *PowerMetricUpdate) SetWatt(i int) *PowerMetricUpdate {
+	pmu.mutation.ResetWatt()
+	pmu.mutation.SetWatt(i)
+	return pmu
+}
+
+// SetNillableWatt sets the "watt" field if the given value is not nil.
+func (pmu *PowerMetricUpdate) SetNillableWatt(i *int) *PowerMetricUpdate {
+	if i != nil {
+		pmu.SetWatt(*i)
+	}
+	return pmu
+}
+
+// AddWatt adds i to the "watt" field.
+func (pmu *PowerMetricUpdate) AddWatt(i int) *PowerMetricUpdate {
+	pmu.mutation.AddWatt(i)
 	return pmu
 }
 
@@ -105,11 +119,14 @@ func (pmu *PowerMetricUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := pmu.mutation.SurplusWatt(); ok {
-		_spec.SetField(powermetric.FieldSurplusWatt, field.TypeInt, value)
+	if value, ok := pmu.mutation.Name(); ok {
+		_spec.SetField(powermetric.FieldName, field.TypeString, value)
 	}
-	if value, ok := pmu.mutation.AddedSurplusWatt(); ok {
-		_spec.AddField(powermetric.FieldSurplusWatt, field.TypeInt, value)
+	if value, ok := pmu.mutation.Watt(); ok {
+		_spec.SetField(powermetric.FieldWatt, field.TypeInt, value)
+	}
+	if value, ok := pmu.mutation.AddedWatt(); ok {
+		_spec.AddField(powermetric.FieldWatt, field.TypeInt, value)
 	}
 	if value, ok := pmu.mutation.Timestamp(); ok {
 		_spec.SetField(powermetric.FieldTimestamp, field.TypeTime, value)
@@ -134,24 +151,38 @@ type PowerMetricUpdateOne struct {
 	mutation *PowerMetricMutation
 }
 
-// SetSurplusWatt sets the "surplus_watt" field.
-func (pmuo *PowerMetricUpdateOne) SetSurplusWatt(i int) *PowerMetricUpdateOne {
-	pmuo.mutation.ResetSurplusWatt()
-	pmuo.mutation.SetSurplusWatt(i)
+// SetName sets the "name" field.
+func (pmuo *PowerMetricUpdateOne) SetName(s string) *PowerMetricUpdateOne {
+	pmuo.mutation.SetName(s)
 	return pmuo
 }
 
-// SetNillableSurplusWatt sets the "surplus_watt" field if the given value is not nil.
-func (pmuo *PowerMetricUpdateOne) SetNillableSurplusWatt(i *int) *PowerMetricUpdateOne {
-	if i != nil {
-		pmuo.SetSurplusWatt(*i)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pmuo *PowerMetricUpdateOne) SetNillableName(s *string) *PowerMetricUpdateOne {
+	if s != nil {
+		pmuo.SetName(*s)
 	}
 	return pmuo
 }
 
-// AddSurplusWatt adds i to the "surplus_watt" field.
-func (pmuo *PowerMetricUpdateOne) AddSurplusWatt(i int) *PowerMetricUpdateOne {
-	pmuo.mutation.AddSurplusWatt(i)
+// SetWatt sets the "watt" field.
+func (pmuo *PowerMetricUpdateOne) SetWatt(i int) *PowerMetricUpdateOne {
+	pmuo.mutation.ResetWatt()
+	pmuo.mutation.SetWatt(i)
+	return pmuo
+}
+
+// SetNillableWatt sets the "watt" field if the given value is not nil.
+func (pmuo *PowerMetricUpdateOne) SetNillableWatt(i *int) *PowerMetricUpdateOne {
+	if i != nil {
+		pmuo.SetWatt(*i)
+	}
+	return pmuo
+}
+
+// AddWatt adds i to the "watt" field.
+func (pmuo *PowerMetricUpdateOne) AddWatt(i int) *PowerMetricUpdateOne {
+	pmuo.mutation.AddWatt(i)
 	return pmuo
 }
 
@@ -240,11 +271,14 @@ func (pmuo *PowerMetricUpdateOne) sqlSave(ctx context.Context) (_node *PowerMetr
 			}
 		}
 	}
-	if value, ok := pmuo.mutation.SurplusWatt(); ok {
-		_spec.SetField(powermetric.FieldSurplusWatt, field.TypeInt, value)
+	if value, ok := pmuo.mutation.Name(); ok {
+		_spec.SetField(powermetric.FieldName, field.TypeString, value)
 	}
-	if value, ok := pmuo.mutation.AddedSurplusWatt(); ok {
-		_spec.AddField(powermetric.FieldSurplusWatt, field.TypeInt, value)
+	if value, ok := pmuo.mutation.Watt(); ok {
+		_spec.SetField(powermetric.FieldWatt, field.TypeInt, value)
+	}
+	if value, ok := pmuo.mutation.AddedWatt(); ok {
+		_spec.AddField(powermetric.FieldWatt, field.TypeInt, value)
 	}
 	if value, ok := pmuo.mutation.Timestamp(); ok {
 		_spec.SetField(powermetric.FieldTimestamp, field.TypeTime, value)

@@ -11,8 +11,10 @@ const (
 	Label = "power_metric"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldSurplusWatt holds the string denoting the surplus_watt field in the database.
-	FieldSurplusWatt = "surplus_watt"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldWatt holds the string denoting the watt field in the database.
+	FieldWatt = "watt"
 	// FieldTimestamp holds the string denoting the timestamp field in the database.
 	FieldTimestamp = "timestamp"
 	// Table holds the table name of the powermetric in the database.
@@ -22,7 +24,8 @@ const (
 // Columns holds all SQL columns for powermetric fields.
 var Columns = []string{
 	FieldID,
-	FieldSurplusWatt,
+	FieldName,
+	FieldWatt,
 	FieldTimestamp,
 }
 
@@ -44,9 +47,14 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// BySurplusWatt orders the results by the surplus_watt field.
-func BySurplusWatt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSurplusWatt, opts...).ToFunc()
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByWatt orders the results by the watt field.
+func ByWatt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWatt, opts...).ToFunc()
 }
 
 // ByTimestamp orders the results by the timestamp field.

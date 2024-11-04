@@ -32,7 +32,7 @@ direnv allow
 ### Sign in with Tesla
 
 ```shell
-tesla-home-powerflow-optimizer authentication
+tesla-home-powerflow-optimizer authenticate
 ```
 
 ### Check API Connections

@@ -21,11 +21,14 @@ func NewConfig() (*Config, error) {
 	return cfg, nil
 }
 
-func (c *Config) url(path string) string {
+func (c *Config) url(path string, query url.Values) string {
 	u, err := url.Parse(c.ORIGIN)
 	if err != nil {
 		panic(err)
 	}
 	u.Path = path
+	if query != nil {
+		u.RawQuery = query.Encode()
+	}
 	return u.String()
 }
