@@ -1,8 +1,6 @@
 module github.com/sawadashota/tesla-home-powerflow-optimizer
 
-go 1.23.0
-
-toolchain go1.23.1
+go 1.23.4
 
 require (
 	entgo.io/ent v0.14.1
