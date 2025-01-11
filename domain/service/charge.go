@@ -251,6 +251,8 @@ const (
 )
 
 func (s *ChargeService) evaluateMetrics(metrics model.PowerMetricList, setting *model.ChargeSetting, state *model.VehicleChargeState) (amp int, action chargingAction) {
+	// NOTE: state is not fresh but checking latest state is limited by Tesla API rate limit.
+	//       so, decision is made based on the latest state and will not stop until end of the time range.
 	if state.BatteryLevel <= setting.MinCharge.Threshold &&
 		setting.MinCharge.Enabled() &&
 		setting.MinCharge.TimeRange.InRange(model.TimeOnlyNow()) {
