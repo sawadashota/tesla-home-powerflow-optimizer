@@ -126,6 +126,76 @@ func (csu *ChargeSettingUpdate) AddUpdateInterval(i int) *ChargeSettingUpdate {
 	return csu
 }
 
+// SetMinChargeThreshold sets the "min_charge_threshold" field.
+func (csu *ChargeSettingUpdate) SetMinChargeThreshold(i int) *ChargeSettingUpdate {
+	csu.mutation.ResetMinChargeThreshold()
+	csu.mutation.SetMinChargeThreshold(i)
+	return csu
+}
+
+// SetNillableMinChargeThreshold sets the "min_charge_threshold" field if the given value is not nil.
+func (csu *ChargeSettingUpdate) SetNillableMinChargeThreshold(i *int) *ChargeSettingUpdate {
+	if i != nil {
+		csu.SetMinChargeThreshold(*i)
+	}
+	return csu
+}
+
+// AddMinChargeThreshold adds i to the "min_charge_threshold" field.
+func (csu *ChargeSettingUpdate) AddMinChargeThreshold(i int) *ChargeSettingUpdate {
+	csu.mutation.AddMinChargeThreshold(i)
+	return csu
+}
+
+// SetMinChargeTimeRangeStart sets the "min_charge_time_range_start" field.
+func (csu *ChargeSettingUpdate) SetMinChargeTimeRangeStart(s string) *ChargeSettingUpdate {
+	csu.mutation.SetMinChargeTimeRangeStart(s)
+	return csu
+}
+
+// SetNillableMinChargeTimeRangeStart sets the "min_charge_time_range_start" field if the given value is not nil.
+func (csu *ChargeSettingUpdate) SetNillableMinChargeTimeRangeStart(s *string) *ChargeSettingUpdate {
+	if s != nil {
+		csu.SetMinChargeTimeRangeStart(*s)
+	}
+	return csu
+}
+
+// SetMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field.
+func (csu *ChargeSettingUpdate) SetMinChargeTimeRangeEnd(s string) *ChargeSettingUpdate {
+	csu.mutation.SetMinChargeTimeRangeEnd(s)
+	return csu
+}
+
+// SetNillableMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field if the given value is not nil.
+func (csu *ChargeSettingUpdate) SetNillableMinChargeTimeRangeEnd(s *string) *ChargeSettingUpdate {
+	if s != nil {
+		csu.SetMinChargeTimeRangeEnd(*s)
+	}
+	return csu
+}
+
+// SetMinChargeAmperage sets the "min_charge_amperage" field.
+func (csu *ChargeSettingUpdate) SetMinChargeAmperage(i int) *ChargeSettingUpdate {
+	csu.mutation.ResetMinChargeAmperage()
+	csu.mutation.SetMinChargeAmperage(i)
+	return csu
+}
+
+// SetNillableMinChargeAmperage sets the "min_charge_amperage" field if the given value is not nil.
+func (csu *ChargeSettingUpdate) SetNillableMinChargeAmperage(i *int) *ChargeSettingUpdate {
+	if i != nil {
+		csu.SetMinChargeAmperage(*i)
+	}
+	return csu
+}
+
+// AddMinChargeAmperage adds i to the "min_charge_amperage" field.
+func (csu *ChargeSettingUpdate) AddMinChargeAmperage(i int) *ChargeSettingUpdate {
+	csu.mutation.AddMinChargeAmperage(i)
+	return csu
+}
+
 // Mutation returns the ChargeSettingMutation object of the builder.
 func (csu *ChargeSettingUpdate) Mutation() *ChargeSettingMutation {
 	return csu.mutation
@@ -158,7 +228,25 @@ func (csu *ChargeSettingUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csu *ChargeSettingUpdate) check() error {
+	if v, ok := csu.mutation.MinChargeThreshold(); ok {
+		if err := chargesetting.MinChargeThresholdValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_threshold", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_threshold": %w`, err)}
+		}
+	}
+	if v, ok := csu.mutation.MinChargeAmperage(); ok {
+		if err := chargesetting.MinChargeAmperageValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_amperage", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_amperage": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (csu *ChargeSettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := csu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(chargesetting.Table, chargesetting.Columns, sqlgraph.NewFieldSpec(chargesetting.FieldID, field.TypeInt))
 	if ps := csu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -193,6 +281,24 @@ func (csu *ChargeSettingUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := csu.mutation.AddedUpdateInterval(); ok {
 		_spec.AddField(chargesetting.FieldUpdateInterval, field.TypeInt, value)
+	}
+	if value, ok := csu.mutation.MinChargeThreshold(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeThreshold, field.TypeInt, value)
+	}
+	if value, ok := csu.mutation.AddedMinChargeThreshold(); ok {
+		_spec.AddField(chargesetting.FieldMinChargeThreshold, field.TypeInt, value)
+	}
+	if value, ok := csu.mutation.MinChargeTimeRangeStart(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeStart, field.TypeString, value)
+	}
+	if value, ok := csu.mutation.MinChargeTimeRangeEnd(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeEnd, field.TypeString, value)
+	}
+	if value, ok := csu.mutation.MinChargeAmperage(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeAmperage, field.TypeInt, value)
+	}
+	if value, ok := csu.mutation.AddedMinChargeAmperage(); ok {
+		_spec.AddField(chargesetting.FieldMinChargeAmperage, field.TypeInt, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, csu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -312,6 +418,76 @@ func (csuo *ChargeSettingUpdateOne) AddUpdateInterval(i int) *ChargeSettingUpdat
 	return csuo
 }
 
+// SetMinChargeThreshold sets the "min_charge_threshold" field.
+func (csuo *ChargeSettingUpdateOne) SetMinChargeThreshold(i int) *ChargeSettingUpdateOne {
+	csuo.mutation.ResetMinChargeThreshold()
+	csuo.mutation.SetMinChargeThreshold(i)
+	return csuo
+}
+
+// SetNillableMinChargeThreshold sets the "min_charge_threshold" field if the given value is not nil.
+func (csuo *ChargeSettingUpdateOne) SetNillableMinChargeThreshold(i *int) *ChargeSettingUpdateOne {
+	if i != nil {
+		csuo.SetMinChargeThreshold(*i)
+	}
+	return csuo
+}
+
+// AddMinChargeThreshold adds i to the "min_charge_threshold" field.
+func (csuo *ChargeSettingUpdateOne) AddMinChargeThreshold(i int) *ChargeSettingUpdateOne {
+	csuo.mutation.AddMinChargeThreshold(i)
+	return csuo
+}
+
+// SetMinChargeTimeRangeStart sets the "min_charge_time_range_start" field.
+func (csuo *ChargeSettingUpdateOne) SetMinChargeTimeRangeStart(s string) *ChargeSettingUpdateOne {
+	csuo.mutation.SetMinChargeTimeRangeStart(s)
+	return csuo
+}
+
+// SetNillableMinChargeTimeRangeStart sets the "min_charge_time_range_start" field if the given value is not nil.
+func (csuo *ChargeSettingUpdateOne) SetNillableMinChargeTimeRangeStart(s *string) *ChargeSettingUpdateOne {
+	if s != nil {
+		csuo.SetMinChargeTimeRangeStart(*s)
+	}
+	return csuo
+}
+
+// SetMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field.
+func (csuo *ChargeSettingUpdateOne) SetMinChargeTimeRangeEnd(s string) *ChargeSettingUpdateOne {
+	csuo.mutation.SetMinChargeTimeRangeEnd(s)
+	return csuo
+}
+
+// SetNillableMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field if the given value is not nil.
+func (csuo *ChargeSettingUpdateOne) SetNillableMinChargeTimeRangeEnd(s *string) *ChargeSettingUpdateOne {
+	if s != nil {
+		csuo.SetMinChargeTimeRangeEnd(*s)
+	}
+	return csuo
+}
+
+// SetMinChargeAmperage sets the "min_charge_amperage" field.
+func (csuo *ChargeSettingUpdateOne) SetMinChargeAmperage(i int) *ChargeSettingUpdateOne {
+	csuo.mutation.ResetMinChargeAmperage()
+	csuo.mutation.SetMinChargeAmperage(i)
+	return csuo
+}
+
+// SetNillableMinChargeAmperage sets the "min_charge_amperage" field if the given value is not nil.
+func (csuo *ChargeSettingUpdateOne) SetNillableMinChargeAmperage(i *int) *ChargeSettingUpdateOne {
+	if i != nil {
+		csuo.SetMinChargeAmperage(*i)
+	}
+	return csuo
+}
+
+// AddMinChargeAmperage adds i to the "min_charge_amperage" field.
+func (csuo *ChargeSettingUpdateOne) AddMinChargeAmperage(i int) *ChargeSettingUpdateOne {
+	csuo.mutation.AddMinChargeAmperage(i)
+	return csuo
+}
+
 // Mutation returns the ChargeSettingMutation object of the builder.
 func (csuo *ChargeSettingUpdateOne) Mutation() *ChargeSettingMutation {
 	return csuo.mutation
@@ -357,7 +533,25 @@ func (csuo *ChargeSettingUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csuo *ChargeSettingUpdateOne) check() error {
+	if v, ok := csuo.mutation.MinChargeThreshold(); ok {
+		if err := chargesetting.MinChargeThresholdValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_threshold", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_threshold": %w`, err)}
+		}
+	}
+	if v, ok := csuo.mutation.MinChargeAmperage(); ok {
+		if err := chargesetting.MinChargeAmperageValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_amperage", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_amperage": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (csuo *ChargeSettingUpdateOne) sqlSave(ctx context.Context) (_node *ChargeSetting, err error) {
+	if err := csuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(chargesetting.Table, chargesetting.Columns, sqlgraph.NewFieldSpec(chargesetting.FieldID, field.TypeInt))
 	id, ok := csuo.mutation.ID()
 	if !ok {
@@ -409,6 +603,24 @@ func (csuo *ChargeSettingUpdateOne) sqlSave(ctx context.Context) (_node *ChargeS
 	}
 	if value, ok := csuo.mutation.AddedUpdateInterval(); ok {
 		_spec.AddField(chargesetting.FieldUpdateInterval, field.TypeInt, value)
+	}
+	if value, ok := csuo.mutation.MinChargeThreshold(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeThreshold, field.TypeInt, value)
+	}
+	if value, ok := csuo.mutation.AddedMinChargeThreshold(); ok {
+		_spec.AddField(chargesetting.FieldMinChargeThreshold, field.TypeInt, value)
+	}
+	if value, ok := csuo.mutation.MinChargeTimeRangeStart(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeStart, field.TypeString, value)
+	}
+	if value, ok := csuo.mutation.MinChargeTimeRangeEnd(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeEnd, field.TypeString, value)
+	}
+	if value, ok := csuo.mutation.MinChargeAmperage(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeAmperage, field.TypeInt, value)
+	}
+	if value, ok := csuo.mutation.AddedMinChargeAmperage(); ok {
+		_spec.AddField(chargesetting.FieldMinChargeAmperage, field.TypeInt, value)
 	}
 	_node = &ChargeSetting{config: csuo.config}
 	_spec.Assign = _node.assignValues

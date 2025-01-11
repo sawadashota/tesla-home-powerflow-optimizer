@@ -27,7 +27,15 @@ type ChargeSetting struct {
 	PowerUsageDecreaseThreshold int `json:"power_usage_decrease_threshold,omitempty"`
 	// UpdateInterval holds the value of the "update_interval" field.
 	UpdateInterval int `json:"update_interval,omitempty"`
-	selectValues   sql.SelectValues
+	// MinChargeThreshold holds the value of the "min_charge_threshold" field.
+	MinChargeThreshold int `json:"min_charge_threshold,omitempty"`
+	// MinChargeTimeRangeStart holds the value of the "min_charge_time_range_start" field.
+	MinChargeTimeRangeStart string `json:"min_charge_time_range_start,omitempty"`
+	// MinChargeTimeRangeEnd holds the value of the "min_charge_time_range_end" field.
+	MinChargeTimeRangeEnd string `json:"min_charge_time_range_end,omitempty"`
+	// MinChargeAmperage holds the value of the "min_charge_amperage" field.
+	MinChargeAmperage int `json:"min_charge_amperage,omitempty"`
+	selectValues      sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,8 +45,10 @@ func (*ChargeSetting) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case chargesetting.FieldEnabled:
 			values[i] = new(sql.NullBool)
-		case chargesetting.FieldID, chargesetting.FieldChargeStartThreshold, chargesetting.FieldPowerUsageIncreaseThreshold, chargesetting.FieldPowerUsageDecreaseThreshold, chargesetting.FieldUpdateInterval:
+		case chargesetting.FieldID, chargesetting.FieldChargeStartThreshold, chargesetting.FieldPowerUsageIncreaseThreshold, chargesetting.FieldPowerUsageDecreaseThreshold, chargesetting.FieldUpdateInterval, chargesetting.FieldMinChargeThreshold, chargesetting.FieldMinChargeAmperage:
 			values[i] = new(sql.NullInt64)
+		case chargesetting.FieldMinChargeTimeRangeStart, chargesetting.FieldMinChargeTimeRangeEnd:
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -90,6 +100,30 @@ func (cs *ChargeSetting) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				cs.UpdateInterval = int(value.Int64)
 			}
+		case chargesetting.FieldMinChargeThreshold:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field min_charge_threshold", values[i])
+			} else if value.Valid {
+				cs.MinChargeThreshold = int(value.Int64)
+			}
+		case chargesetting.FieldMinChargeTimeRangeStart:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field min_charge_time_range_start", values[i])
+			} else if value.Valid {
+				cs.MinChargeTimeRangeStart = value.String
+			}
+		case chargesetting.FieldMinChargeTimeRangeEnd:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field min_charge_time_range_end", values[i])
+			} else if value.Valid {
+				cs.MinChargeTimeRangeEnd = value.String
+			}
+		case chargesetting.FieldMinChargeAmperage:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field min_charge_amperage", values[i])
+			} else if value.Valid {
+				cs.MinChargeAmperage = int(value.Int64)
+			}
 		default:
 			cs.selectValues.Set(columns[i], values[i])
 		}
@@ -140,6 +174,18 @@ func (cs *ChargeSetting) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_interval=")
 	builder.WriteString(fmt.Sprintf("%v", cs.UpdateInterval))
+	builder.WriteString(", ")
+	builder.WriteString("min_charge_threshold=")
+	builder.WriteString(fmt.Sprintf("%v", cs.MinChargeThreshold))
+	builder.WriteString(", ")
+	builder.WriteString("min_charge_time_range_start=")
+	builder.WriteString(cs.MinChargeTimeRangeStart)
+	builder.WriteString(", ")
+	builder.WriteString("min_charge_time_range_end=")
+	builder.WriteString(cs.MinChargeTimeRangeEnd)
+	builder.WriteString(", ")
+	builder.WriteString("min_charge_amperage=")
+	builder.WriteString(fmt.Sprintf("%v", cs.MinChargeAmperage))
 	builder.WriteByte(')')
 	return builder.String()
 }

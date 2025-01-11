@@ -22,6 +22,7 @@ bootstrap: ## Bootstrap the project
 
 .PHONY: tsp
 tsp: ## Generate tsp
+	npm run lint:fix
 	npm run tsp
 	cp -r ./tsp-output/@typespec/openapi3/openapi.yaml ./docs/openapi.yaml
 

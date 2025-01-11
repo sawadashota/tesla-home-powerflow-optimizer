@@ -74,7 +74,7 @@ func (u *usecase) GetVehicleData(ctx context.Context, _ restapi.GetVehicleDataRe
 	}, nil
 }
 
-func (u *usecase) SettingGetVehicleChargeSetting(ctx context.Context, req restapi.SettingGetVehicleChargeSettingRequestObject) (restapi.SettingGetVehicleChargeSettingResponseObject, error) {
+func (u *usecase) SettingGetVehicleChargeSetting(ctx context.Context, _ restapi.SettingGetVehicleChargeSettingRequestObject) (restapi.SettingGetVehicleChargeSettingResponseObject, error) {
 	s, err := u.r.ChargeService().DescribeSetting(ctx)
 	if err != nil {
 		return restapi.SettingGetVehicleChargeSetting500JSONResponse{
@@ -88,16 +88,44 @@ func (u *usecase) SettingGetVehicleChargeSetting(ctx context.Context, req restap
 		PowerUsageDecreaseThreshold: s.PowerUsageDecreaseThreshold,
 		PowerUsageIncreaseThreshold: s.PowerUsageIncreaseThreshold,
 		UpdateInterval:              int(s.UpdateInterval.Minutes()),
+		MinimumSetting: restapi.ChargeSettingMinimumSetting{
+			Threshold:      uint8(s.MinCharge.Threshold),
+			TimeRangeStart: s.MinCharge.TimeRange.Start.HourMinute(),
+			TimeRangeEnd:   s.MinCharge.TimeRange.End.HourMinute(),
+			Amperage:       uint8(s.MinCharge.Amperage),
+		},
 	}, nil
 }
 
 func (u *usecase) SettingSaveVehicleChargeSetting(ctx context.Context, req restapi.SettingSaveVehicleChargeSettingRequestObject) (restapi.SettingSaveVehicleChargeSettingResponseObject, error) {
+	minChargeTimeRangeStart, err := model.ParseTimeOnly(req.Body.MinimumSetting.TimeRangeStart)
+	if err != nil {
+		return restapi.SettingSaveVehicleChargeSetting400JSONResponse{
+			Code:    restapi.ValidationError,
+			Message: err.Error(),
+		}, nil
+	}
+	minChargeTimeRangeEnd, err := model.ParseTimeOnly(req.Body.MinimumSetting.TimeRangeEnd)
+	if err != nil {
+		return restapi.SettingSaveVehicleChargeSetting400JSONResponse{
+			Code:    restapi.ValidationError,
+			Message: err.Error(),
+		}, nil
+	}
 	if err := u.r.ChargeService().SaveSetting(ctx, &model.ChargeSetting{
-		ChargeStartThreshold:        req.Body.ChargeStartThreshold,
 		Enabled:                     req.Body.Enabled,
-		PowerUsageDecreaseThreshold: req.Body.PowerUsageDecreaseThreshold,
+		ChargeStartThreshold:        req.Body.ChargeStartThreshold,
 		PowerUsageIncreaseThreshold: req.Body.PowerUsageIncreaseThreshold,
+		PowerUsageDecreaseThreshold: req.Body.PowerUsageDecreaseThreshold,
 		UpdateInterval:              time.Duration(req.Body.UpdateInterval) * time.Minute,
+		MinCharge: model.MinimumChargeSetting{
+			Threshold: int(req.Body.MinimumSetting.Threshold),
+			TimeRange: model.TimeRange{
+				Start: minChargeTimeRangeStart,
+				End:   minChargeTimeRangeEnd,
+			},
+			Amperage: int(req.Body.MinimumSetting.Amperage),
+		},
 	}); err != nil {
 		return restapi.SettingSaveVehicleChargeSetting500JSONResponse{
 			Code:    restapi.InternalServerError,

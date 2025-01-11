@@ -58,6 +58,62 @@ func (csc *ChargeSettingCreate) SetUpdateInterval(i int) *ChargeSettingCreate {
 	return csc
 }
 
+// SetMinChargeThreshold sets the "min_charge_threshold" field.
+func (csc *ChargeSettingCreate) SetMinChargeThreshold(i int) *ChargeSettingCreate {
+	csc.mutation.SetMinChargeThreshold(i)
+	return csc
+}
+
+// SetNillableMinChargeThreshold sets the "min_charge_threshold" field if the given value is not nil.
+func (csc *ChargeSettingCreate) SetNillableMinChargeThreshold(i *int) *ChargeSettingCreate {
+	if i != nil {
+		csc.SetMinChargeThreshold(*i)
+	}
+	return csc
+}
+
+// SetMinChargeTimeRangeStart sets the "min_charge_time_range_start" field.
+func (csc *ChargeSettingCreate) SetMinChargeTimeRangeStart(s string) *ChargeSettingCreate {
+	csc.mutation.SetMinChargeTimeRangeStart(s)
+	return csc
+}
+
+// SetNillableMinChargeTimeRangeStart sets the "min_charge_time_range_start" field if the given value is not nil.
+func (csc *ChargeSettingCreate) SetNillableMinChargeTimeRangeStart(s *string) *ChargeSettingCreate {
+	if s != nil {
+		csc.SetMinChargeTimeRangeStart(*s)
+	}
+	return csc
+}
+
+// SetMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field.
+func (csc *ChargeSettingCreate) SetMinChargeTimeRangeEnd(s string) *ChargeSettingCreate {
+	csc.mutation.SetMinChargeTimeRangeEnd(s)
+	return csc
+}
+
+// SetNillableMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field if the given value is not nil.
+func (csc *ChargeSettingCreate) SetNillableMinChargeTimeRangeEnd(s *string) *ChargeSettingCreate {
+	if s != nil {
+		csc.SetMinChargeTimeRangeEnd(*s)
+	}
+	return csc
+}
+
+// SetMinChargeAmperage sets the "min_charge_amperage" field.
+func (csc *ChargeSettingCreate) SetMinChargeAmperage(i int) *ChargeSettingCreate {
+	csc.mutation.SetMinChargeAmperage(i)
+	return csc
+}
+
+// SetNillableMinChargeAmperage sets the "min_charge_amperage" field if the given value is not nil.
+func (csc *ChargeSettingCreate) SetNillableMinChargeAmperage(i *int) *ChargeSettingCreate {
+	if i != nil {
+		csc.SetMinChargeAmperage(*i)
+	}
+	return csc
+}
+
 // Mutation returns the ChargeSettingMutation object of the builder.
 func (csc *ChargeSettingCreate) Mutation() *ChargeSettingMutation {
 	return csc.mutation
@@ -97,6 +153,22 @@ func (csc *ChargeSettingCreate) defaults() {
 		v := chargesetting.DefaultEnabled
 		csc.mutation.SetEnabled(v)
 	}
+	if _, ok := csc.mutation.MinChargeThreshold(); !ok {
+		v := chargesetting.DefaultMinChargeThreshold
+		csc.mutation.SetMinChargeThreshold(v)
+	}
+	if _, ok := csc.mutation.MinChargeTimeRangeStart(); !ok {
+		v := chargesetting.DefaultMinChargeTimeRangeStart
+		csc.mutation.SetMinChargeTimeRangeStart(v)
+	}
+	if _, ok := csc.mutation.MinChargeTimeRangeEnd(); !ok {
+		v := chargesetting.DefaultMinChargeTimeRangeEnd
+		csc.mutation.SetMinChargeTimeRangeEnd(v)
+	}
+	if _, ok := csc.mutation.MinChargeAmperage(); !ok {
+		v := chargesetting.DefaultMinChargeAmperage
+		csc.mutation.SetMinChargeAmperage(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -115,6 +187,28 @@ func (csc *ChargeSettingCreate) check() error {
 	}
 	if _, ok := csc.mutation.UpdateInterval(); !ok {
 		return &ValidationError{Name: "update_interval", err: errors.New(`ent: missing required field "ChargeSetting.update_interval"`)}
+	}
+	if _, ok := csc.mutation.MinChargeThreshold(); !ok {
+		return &ValidationError{Name: "min_charge_threshold", err: errors.New(`ent: missing required field "ChargeSetting.min_charge_threshold"`)}
+	}
+	if v, ok := csc.mutation.MinChargeThreshold(); ok {
+		if err := chargesetting.MinChargeThresholdValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_threshold", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_threshold": %w`, err)}
+		}
+	}
+	if _, ok := csc.mutation.MinChargeTimeRangeStart(); !ok {
+		return &ValidationError{Name: "min_charge_time_range_start", err: errors.New(`ent: missing required field "ChargeSetting.min_charge_time_range_start"`)}
+	}
+	if _, ok := csc.mutation.MinChargeTimeRangeEnd(); !ok {
+		return &ValidationError{Name: "min_charge_time_range_end", err: errors.New(`ent: missing required field "ChargeSetting.min_charge_time_range_end"`)}
+	}
+	if _, ok := csc.mutation.MinChargeAmperage(); !ok {
+		return &ValidationError{Name: "min_charge_amperage", err: errors.New(`ent: missing required field "ChargeSetting.min_charge_amperage"`)}
+	}
+	if v, ok := csc.mutation.MinChargeAmperage(); ok {
+		if err := chargesetting.MinChargeAmperageValidator(v); err != nil {
+			return &ValidationError{Name: "min_charge_amperage", err: fmt.Errorf(`ent: validator failed for field "ChargeSetting.min_charge_amperage": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -161,6 +255,22 @@ func (csc *ChargeSettingCreate) createSpec() (*ChargeSetting, *sqlgraph.CreateSp
 	if value, ok := csc.mutation.UpdateInterval(); ok {
 		_spec.SetField(chargesetting.FieldUpdateInterval, field.TypeInt, value)
 		_node.UpdateInterval = value
+	}
+	if value, ok := csc.mutation.MinChargeThreshold(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeThreshold, field.TypeInt, value)
+		_node.MinChargeThreshold = value
+	}
+	if value, ok := csc.mutation.MinChargeTimeRangeStart(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeStart, field.TypeString, value)
+		_node.MinChargeTimeRangeStart = value
+	}
+	if value, ok := csc.mutation.MinChargeTimeRangeEnd(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeTimeRangeEnd, field.TypeString, value)
+		_node.MinChargeTimeRangeEnd = value
+	}
+	if value, ok := csc.mutation.MinChargeAmperage(); ok {
+		_spec.SetField(chargesetting.FieldMinChargeAmperage, field.TypeInt, value)
+		_node.MinChargeAmperage = value
 	}
 	return _node, _spec
 }

@@ -97,6 +97,27 @@ namespace Vehicle {
         @doc("minutes of update interval")
         @minValue(10)
         update_interval: integer;
+
+        @doc("setting to charge the vehicle until the battery reaches the threshold")
+        minimum_setting: MinimumSetting;
+      }
+
+      model MinimumSetting {
+        @minValue(0)
+        @maxValue(100)
+        threshold: uint8 = 0;
+
+        @example("22:00")
+        @pattern("^\\d{2}:\\d{2}$")
+        time_range_start: string = "22:00";
+
+        @example("22:00")
+        @pattern("^\\d{2}:\\d{2}$")
+        time_range_end: string = "06:00";
+
+        @minValue(5)
+        @maxValue(16)
+        amperage: uint8 = 16;
       }
 
       op getVehicleChargeSetting(): {

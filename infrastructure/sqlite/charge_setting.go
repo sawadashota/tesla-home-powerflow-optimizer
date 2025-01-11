@@ -31,12 +31,30 @@ func (r *chargeSettingRepository) FindOne(ctx context.Context) (*model.ChargeSet
 		}
 		return nil, err
 	}
+
+	minChargeTimeRangeStart, err := model.ParseTimeOnly(found.MinChargeTimeRangeStart)
+	if err != nil {
+		return nil, err
+	}
+	minChargeTimeRangeEnd, err := model.ParseTimeOnly(found.MinChargeTimeRangeEnd)
+	if err != nil {
+		return nil, err
+	}
+
 	return &model.ChargeSetting{
 		Enabled:                     found.Enabled,
 		ChargeStartThreshold:        found.ChargeStartThreshold,
 		PowerUsageIncreaseThreshold: found.PowerUsageIncreaseThreshold,
 		PowerUsageDecreaseThreshold: found.PowerUsageDecreaseThreshold,
 		UpdateInterval:              time.Duration(found.UpdateInterval) * time.Minute,
+		MinCharge: model.MinimumChargeSetting{
+			Threshold: found.MinChargeThreshold,
+			TimeRange: model.TimeRange{
+				Start: minChargeTimeRangeStart,
+				End:   minChargeTimeRangeEnd,
+			},
+			Amperage: found.MinChargeAmperage,
+		},
 	}, nil
 }
 
@@ -61,6 +79,10 @@ func (r *chargeSettingRepository) SaveOne(ctx context.Context, setting *model.Ch
 			SetPowerUsageIncreaseThreshold(setting.PowerUsageIncreaseThreshold).
 			SetPowerUsageDecreaseThreshold(setting.PowerUsageDecreaseThreshold).
 			SetUpdateInterval(int(setting.UpdateInterval.Minutes())).
+			SetMinChargeThreshold(setting.MinCharge.Threshold).
+			SetMinChargeTimeRangeStart(setting.MinCharge.TimeRange.Start.HourMinute()).
+			SetMinChargeTimeRangeEnd(setting.MinCharge.TimeRange.End.HourMinute()).
+			SetMinChargeAmperage(setting.MinCharge.Amperage).
 			Save(ctx)
 		return err
 	}
@@ -73,6 +95,10 @@ func (r *chargeSettingRepository) SaveOne(ctx context.Context, setting *model.Ch
 		SetPowerUsageIncreaseThreshold(setting.PowerUsageIncreaseThreshold).
 		SetPowerUsageDecreaseThreshold(setting.PowerUsageDecreaseThreshold).
 		SetUpdateInterval(int(setting.UpdateInterval.Minutes())).
+		SetMinChargeThreshold(setting.MinCharge.Threshold).
+		SetMinChargeTimeRangeStart(setting.MinCharge.TimeRange.Start.HourMinute()).
+		SetMinChargeTimeRangeEnd(setting.MinCharge.TimeRange.End.HourMinute()).
+		SetMinChargeAmperage(setting.MinCharge.Amperage).
 		Save(ctx)
 	return err
 }

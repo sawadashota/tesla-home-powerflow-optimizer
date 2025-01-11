@@ -78,6 +78,26 @@ func UpdateInterval(v int) predicate.ChargeSetting {
 	return predicate.ChargeSetting(sql.FieldEQ(FieldUpdateInterval, v))
 }
 
+// MinChargeThreshold applies equality check predicate on the "min_charge_threshold" field. It's identical to MinChargeThresholdEQ.
+func MinChargeThreshold(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeThreshold, v))
+}
+
+// MinChargeTimeRangeStart applies equality check predicate on the "min_charge_time_range_start" field. It's identical to MinChargeTimeRangeStartEQ.
+func MinChargeTimeRangeStart(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeEnd applies equality check predicate on the "min_charge_time_range_end" field. It's identical to MinChargeTimeRangeEndEQ.
+func MinChargeTimeRangeEnd(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeAmperage applies equality check predicate on the "min_charge_amperage" field. It's identical to MinChargeAmperageEQ.
+func MinChargeAmperage(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeAmperage, v))
+}
+
 // EnabledEQ applies the EQ predicate on the "enabled" field.
 func EnabledEQ(v bool) predicate.ChargeSetting {
 	return predicate.ChargeSetting(sql.FieldEQ(FieldEnabled, v))
@@ -246,6 +266,216 @@ func UpdateIntervalLT(v int) predicate.ChargeSetting {
 // UpdateIntervalLTE applies the LTE predicate on the "update_interval" field.
 func UpdateIntervalLTE(v int) predicate.ChargeSetting {
 	return predicate.ChargeSetting(sql.FieldLTE(FieldUpdateInterval, v))
+}
+
+// MinChargeThresholdEQ applies the EQ predicate on the "min_charge_threshold" field.
+func MinChargeThresholdEQ(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeThreshold, v))
+}
+
+// MinChargeThresholdNEQ applies the NEQ predicate on the "min_charge_threshold" field.
+func MinChargeThresholdNEQ(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNEQ(FieldMinChargeThreshold, v))
+}
+
+// MinChargeThresholdIn applies the In predicate on the "min_charge_threshold" field.
+func MinChargeThresholdIn(vs ...int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldIn(FieldMinChargeThreshold, vs...))
+}
+
+// MinChargeThresholdNotIn applies the NotIn predicate on the "min_charge_threshold" field.
+func MinChargeThresholdNotIn(vs ...int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNotIn(FieldMinChargeThreshold, vs...))
+}
+
+// MinChargeThresholdGT applies the GT predicate on the "min_charge_threshold" field.
+func MinChargeThresholdGT(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGT(FieldMinChargeThreshold, v))
+}
+
+// MinChargeThresholdGTE applies the GTE predicate on the "min_charge_threshold" field.
+func MinChargeThresholdGTE(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGTE(FieldMinChargeThreshold, v))
+}
+
+// MinChargeThresholdLT applies the LT predicate on the "min_charge_threshold" field.
+func MinChargeThresholdLT(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLT(FieldMinChargeThreshold, v))
+}
+
+// MinChargeThresholdLTE applies the LTE predicate on the "min_charge_threshold" field.
+func MinChargeThresholdLTE(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLTE(FieldMinChargeThreshold, v))
+}
+
+// MinChargeTimeRangeStartEQ applies the EQ predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartEQ(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartNEQ applies the NEQ predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartNEQ(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNEQ(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartIn applies the In predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartIn(vs ...string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldIn(FieldMinChargeTimeRangeStart, vs...))
+}
+
+// MinChargeTimeRangeStartNotIn applies the NotIn predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartNotIn(vs ...string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNotIn(FieldMinChargeTimeRangeStart, vs...))
+}
+
+// MinChargeTimeRangeStartGT applies the GT predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartGT(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGT(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartGTE applies the GTE predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartGTE(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGTE(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartLT applies the LT predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartLT(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLT(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartLTE applies the LTE predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartLTE(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLTE(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartContains applies the Contains predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartContains(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldContains(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartHasPrefix applies the HasPrefix predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartHasPrefix(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldHasPrefix(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartHasSuffix applies the HasSuffix predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartHasSuffix(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldHasSuffix(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartEqualFold applies the EqualFold predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartEqualFold(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEqualFold(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeStartContainsFold applies the ContainsFold predicate on the "min_charge_time_range_start" field.
+func MinChargeTimeRangeStartContainsFold(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldContainsFold(FieldMinChargeTimeRangeStart, v))
+}
+
+// MinChargeTimeRangeEndEQ applies the EQ predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndEQ(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndNEQ applies the NEQ predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndNEQ(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNEQ(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndIn applies the In predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndIn(vs ...string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldIn(FieldMinChargeTimeRangeEnd, vs...))
+}
+
+// MinChargeTimeRangeEndNotIn applies the NotIn predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndNotIn(vs ...string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNotIn(FieldMinChargeTimeRangeEnd, vs...))
+}
+
+// MinChargeTimeRangeEndGT applies the GT predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndGT(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGT(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndGTE applies the GTE predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndGTE(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGTE(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndLT applies the LT predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndLT(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLT(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndLTE applies the LTE predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndLTE(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLTE(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndContains applies the Contains predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndContains(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldContains(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndHasPrefix applies the HasPrefix predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndHasPrefix(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldHasPrefix(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndHasSuffix applies the HasSuffix predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndHasSuffix(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldHasSuffix(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndEqualFold applies the EqualFold predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndEqualFold(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEqualFold(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeTimeRangeEndContainsFold applies the ContainsFold predicate on the "min_charge_time_range_end" field.
+func MinChargeTimeRangeEndContainsFold(v string) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldContainsFold(FieldMinChargeTimeRangeEnd, v))
+}
+
+// MinChargeAmperageEQ applies the EQ predicate on the "min_charge_amperage" field.
+func MinChargeAmperageEQ(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldEQ(FieldMinChargeAmperage, v))
+}
+
+// MinChargeAmperageNEQ applies the NEQ predicate on the "min_charge_amperage" field.
+func MinChargeAmperageNEQ(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNEQ(FieldMinChargeAmperage, v))
+}
+
+// MinChargeAmperageIn applies the In predicate on the "min_charge_amperage" field.
+func MinChargeAmperageIn(vs ...int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldIn(FieldMinChargeAmperage, vs...))
+}
+
+// MinChargeAmperageNotIn applies the NotIn predicate on the "min_charge_amperage" field.
+func MinChargeAmperageNotIn(vs ...int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldNotIn(FieldMinChargeAmperage, vs...))
+}
+
+// MinChargeAmperageGT applies the GT predicate on the "min_charge_amperage" field.
+func MinChargeAmperageGT(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGT(FieldMinChargeAmperage, v))
+}
+
+// MinChargeAmperageGTE applies the GTE predicate on the "min_charge_amperage" field.
+func MinChargeAmperageGTE(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldGTE(FieldMinChargeAmperage, v))
+}
+
+// MinChargeAmperageLT applies the LT predicate on the "min_charge_amperage" field.
+func MinChargeAmperageLT(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLT(FieldMinChargeAmperage, v))
+}
+
+// MinChargeAmperageLTE applies the LTE predicate on the "min_charge_amperage" field.
+func MinChargeAmperageLTE(v int) predicate.ChargeSetting {
+	return predicate.ChargeSetting(sql.FieldLTE(FieldMinChargeAmperage, v))
 }
 
 // And groups predicates with the AND operator between them.

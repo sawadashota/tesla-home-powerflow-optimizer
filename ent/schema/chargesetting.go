@@ -18,6 +18,10 @@ func (ChargeSetting) Fields() []ent.Field {
 		field.Int("power_usage_increase_threshold"),
 		field.Int("power_usage_decrease_threshold"),
 		field.Int("update_interval"),
+		field.Int("min_charge_threshold").Min(0).Max(100).Default(0),
+		field.String("min_charge_time_range_start").Default("21:00"),
+		field.String("min_charge_time_range_end").Default("06:00"),
+		field.Int("min_charge_amperage").Min(5).Max(16).Default(16),
 	}
 }
 

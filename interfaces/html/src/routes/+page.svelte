@@ -24,6 +24,12 @@
 				power_usage_increase_threshold: Number(data.power_usage_increase_threshold),
 				power_usage_decrease_threshold: Number(data.power_usage_decrease_threshold),
 				update_interval: Number(data.update_interval),
+				minimum_setting: {
+					threshold: Number(data.minimum_setting.threshold),
+					time_range_start: data.minimum_setting.time_range_start,
+					time_range_end: data.minimum_setting.time_range_end,
+					amperage: Number(data.minimum_setting.amperage),
+				},
 			}),
 		});
 		snackbar.open();
@@ -83,6 +89,34 @@
 					style="width: 100%;"
 					label="Update Interval (minutes)"
 					bind:value={data.update_interval}
+			/>
+		</div>
+		<div>
+			<Textfield
+					style="width: 100%;"
+					label="Minimum Charge Level (%)"
+					bind:value={data.minimum_setting.threshold}
+			/>
+		</div>
+		<div>
+			<Textfield
+					style="width: 100%;"
+					label="Minimum Charge Time Range Start (HH:MM)"
+					bind:value={data.minimum_setting.time_range_start}
+			/>
+		</div>
+		<div>
+			<Textfield
+					style="width: 100%;"
+					label="Minimum Charge Time Range End (HH:MM)"
+					bind:value={data.minimum_setting.time_range_end}
+			/>
+		</div>
+		<div>
+			<Textfield
+					style="width: 100%;"
+					label="Amperage (A) for Minimum Charge"
+					bind:value={data.minimum_setting.amperage}
 			/>
 		</div>
 

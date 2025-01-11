@@ -30,6 +30,10 @@ var (
 		{Name: "power_usage_increase_threshold", Type: field.TypeInt},
 		{Name: "power_usage_decrease_threshold", Type: field.TypeInt},
 		{Name: "update_interval", Type: field.TypeInt},
+		{Name: "min_charge_threshold", Type: field.TypeInt, Default: 0},
+		{Name: "min_charge_time_range_start", Type: field.TypeString, Default: "21:00"},
+		{Name: "min_charge_time_range_end", Type: field.TypeString, Default: "06:00"},
+		{Name: "min_charge_amperage", Type: field.TypeInt, Default: 16},
 	}
 	// ChargeSettingsTable holds the schema information for the "charge_settings" table.
 	ChargeSettingsTable = &schema.Table{

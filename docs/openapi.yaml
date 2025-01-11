@@ -70,6 +70,36 @@ paths:
               $ref: '#/components/schemas/Charge.Setting.Setting'
 components:
   schemas:
+    Charge.Setting.MinimumSetting:
+      type: object
+      required:
+        - threshold
+        - time_range_start
+        - time_range_end
+        - amperage
+      properties:
+        threshold:
+          type: integer
+          format: uint8
+          minimum: 0
+          maximum: 100
+          default: 0
+        time_range_start:
+          type: string
+          example: 22:00
+          pattern: ^\d{2}:\d{2}$
+          default: 22:00
+        time_range_end:
+          type: string
+          example: 22:00
+          pattern: ^\d{2}:\d{2}$
+          default: 06:00
+        amperage:
+          type: integer
+          format: uint8
+          minimum: 5
+          maximum: 16
+          default: 16
     Charge.Setting.Setting:
       type: object
       required:
@@ -78,6 +108,7 @@ components:
         - power_usage_increase_threshold
         - power_usage_decrease_threshold
         - update_interval
+        - minimum_setting
       properties:
         enabled:
           type: boolean
@@ -94,6 +125,10 @@ components:
           type: integer
           minimum: 10
           description: minutes of update interval
+        minimum_setting:
+          allOf:
+            - $ref: '#/components/schemas/Charge.Setting.MinimumSetting'
+          description: setting to charge the vehicle until the battery reaches the threshold
     ChargeState:
       type: object
       required:

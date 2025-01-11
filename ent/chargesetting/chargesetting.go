@@ -21,6 +21,14 @@ const (
 	FieldPowerUsageDecreaseThreshold = "power_usage_decrease_threshold"
 	// FieldUpdateInterval holds the string denoting the update_interval field in the database.
 	FieldUpdateInterval = "update_interval"
+	// FieldMinChargeThreshold holds the string denoting the min_charge_threshold field in the database.
+	FieldMinChargeThreshold = "min_charge_threshold"
+	// FieldMinChargeTimeRangeStart holds the string denoting the min_charge_time_range_start field in the database.
+	FieldMinChargeTimeRangeStart = "min_charge_time_range_start"
+	// FieldMinChargeTimeRangeEnd holds the string denoting the min_charge_time_range_end field in the database.
+	FieldMinChargeTimeRangeEnd = "min_charge_time_range_end"
+	// FieldMinChargeAmperage holds the string denoting the min_charge_amperage field in the database.
+	FieldMinChargeAmperage = "min_charge_amperage"
 	// Table holds the table name of the chargesetting in the database.
 	Table = "charge_settings"
 )
@@ -33,6 +41,10 @@ var Columns = []string{
 	FieldPowerUsageIncreaseThreshold,
 	FieldPowerUsageDecreaseThreshold,
 	FieldUpdateInterval,
+	FieldMinChargeThreshold,
+	FieldMinChargeTimeRangeStart,
+	FieldMinChargeTimeRangeEnd,
+	FieldMinChargeAmperage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -48,6 +60,18 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultEnabled holds the default value on creation for the "enabled" field.
 	DefaultEnabled bool
+	// DefaultMinChargeThreshold holds the default value on creation for the "min_charge_threshold" field.
+	DefaultMinChargeThreshold int
+	// MinChargeThresholdValidator is a validator for the "min_charge_threshold" field. It is called by the builders before save.
+	MinChargeThresholdValidator func(int) error
+	// DefaultMinChargeTimeRangeStart holds the default value on creation for the "min_charge_time_range_start" field.
+	DefaultMinChargeTimeRangeStart string
+	// DefaultMinChargeTimeRangeEnd holds the default value on creation for the "min_charge_time_range_end" field.
+	DefaultMinChargeTimeRangeEnd string
+	// DefaultMinChargeAmperage holds the default value on creation for the "min_charge_amperage" field.
+	DefaultMinChargeAmperage int
+	// MinChargeAmperageValidator is a validator for the "min_charge_amperage" field. It is called by the builders before save.
+	MinChargeAmperageValidator func(int) error
 )
 
 // OrderOption defines the ordering options for the ChargeSetting queries.
@@ -81,4 +105,24 @@ func ByPowerUsageDecreaseThreshold(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdateInterval orders the results by the update_interval field.
 func ByUpdateInterval(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdateInterval, opts...).ToFunc()
+}
+
+// ByMinChargeThreshold orders the results by the min_charge_threshold field.
+func ByMinChargeThreshold(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinChargeThreshold, opts...).ToFunc()
+}
+
+// ByMinChargeTimeRangeStart orders the results by the min_charge_time_range_start field.
+func ByMinChargeTimeRangeStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinChargeTimeRangeStart, opts...).ToFunc()
+}
+
+// ByMinChargeTimeRangeEnd orders the results by the min_charge_time_range_end field.
+func ByMinChargeTimeRangeEnd(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinChargeTimeRangeEnd, opts...).ToFunc()
+}
+
+// ByMinChargeAmperage orders the results by the min_charge_amperage field.
+func ByMinChargeAmperage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinChargeAmperage, opts...).ToFunc()
 }

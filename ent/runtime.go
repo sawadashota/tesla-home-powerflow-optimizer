@@ -18,6 +18,54 @@ func init() {
 	chargesettingDescEnabled := chargesettingFields[0].Descriptor()
 	// chargesetting.DefaultEnabled holds the default value on creation for the enabled field.
 	chargesetting.DefaultEnabled = chargesettingDescEnabled.Default.(bool)
+	// chargesettingDescMinChargeThreshold is the schema descriptor for min_charge_threshold field.
+	chargesettingDescMinChargeThreshold := chargesettingFields[5].Descriptor()
+	// chargesetting.DefaultMinChargeThreshold holds the default value on creation for the min_charge_threshold field.
+	chargesetting.DefaultMinChargeThreshold = chargesettingDescMinChargeThreshold.Default.(int)
+	// chargesetting.MinChargeThresholdValidator is a validator for the "min_charge_threshold" field. It is called by the builders before save.
+	chargesetting.MinChargeThresholdValidator = func() func(int) error {
+		validators := chargesettingDescMinChargeThreshold.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(min_charge_threshold int) error {
+			for _, fn := range fns {
+				if err := fn(min_charge_threshold); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// chargesettingDescMinChargeTimeRangeStart is the schema descriptor for min_charge_time_range_start field.
+	chargesettingDescMinChargeTimeRangeStart := chargesettingFields[6].Descriptor()
+	// chargesetting.DefaultMinChargeTimeRangeStart holds the default value on creation for the min_charge_time_range_start field.
+	chargesetting.DefaultMinChargeTimeRangeStart = chargesettingDescMinChargeTimeRangeStart.Default.(string)
+	// chargesettingDescMinChargeTimeRangeEnd is the schema descriptor for min_charge_time_range_end field.
+	chargesettingDescMinChargeTimeRangeEnd := chargesettingFields[7].Descriptor()
+	// chargesetting.DefaultMinChargeTimeRangeEnd holds the default value on creation for the min_charge_time_range_end field.
+	chargesetting.DefaultMinChargeTimeRangeEnd = chargesettingDescMinChargeTimeRangeEnd.Default.(string)
+	// chargesettingDescMinChargeAmperage is the schema descriptor for min_charge_amperage field.
+	chargesettingDescMinChargeAmperage := chargesettingFields[8].Descriptor()
+	// chargesetting.DefaultMinChargeAmperage holds the default value on creation for the min_charge_amperage field.
+	chargesetting.DefaultMinChargeAmperage = chargesettingDescMinChargeAmperage.Default.(int)
+	// chargesetting.MinChargeAmperageValidator is a validator for the "min_charge_amperage" field. It is called by the builders before save.
+	chargesetting.MinChargeAmperageValidator = func() func(int) error {
+		validators := chargesettingDescMinChargeAmperage.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(min_charge_amperage int) error {
+			for _, fn := range fns {
+				if err := fn(min_charge_amperage); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	grantFields := schema.Grant{}.Fields()
 	_ = grantFields
 	// grantDescSubject is the schema descriptor for subject field.

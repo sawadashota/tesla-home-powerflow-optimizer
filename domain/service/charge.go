@@ -53,6 +53,8 @@ func (s *ChargeService) RefreshChargeState(ctx context.Context, vin string) (*mo
 	return s.waitUntilWakedUp(ctx, vin)
 }
 
+const metricCount = 2
+
 // Adjust evaluates the current power usage, charge settings, and latest charge status cache,
 // and makes necessary adjustments to the charging process. This may involve starting
 // or stopping the charging process, as well as increasing or decreasing the charging amperage.
@@ -66,7 +68,6 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		return nil
 	}
 
-	const metricCount = 2
 	metrics, err := s.r.PowerMetricRepository().FindLatestN(ctx, metricCount)
 	if err != nil {
 		return err
@@ -105,20 +106,8 @@ func (s *ChargeService) Adjust(ctx context.Context) error {
 		return err
 	}
 
-	// check if the decision is stable
-	var decision int
-	decisions := make(map[int]struct{}, metricCount)
-	for _, metric := range metrics {
-		decision = DecideChargingAmps(metric, setting, state)
-		decisions[decision] = struct{}{}
-	}
-	if len(decisions) > 1 {
-		// skip at the moment. wait for decision stabilization
-		arr := make([]int, 0, len(decisions))
-		for d := range decisions {
-			arr = append(arr, d)
-		}
-		s.r.Logger().Info("decision is not stable. skip at the moment.", slog.String("decisions", fmt.Sprint(arr)))
+	decision, action := s.evaluateMetrics(metrics, setting, state)
+	if action == chargeActionNoAction {
 		return nil
 	}
 
@@ -254,7 +243,42 @@ func (s *ChargeService) describeVehicleChargeStateWithDelay(ctx context.Context,
 
 const MinimumChargeAmps = 5
 
+type chargingAction int
+
+const (
+	chargeActionNoAction chargingAction = iota
+	chargeActionChangeAmps
+)
+
+func (s *ChargeService) evaluateMetrics(metrics model.PowerMetricList, setting *model.ChargeSetting, state *model.VehicleChargeState) (amp int, action chargingAction) {
+	if state.BatteryLevel <= setting.MinCharge.Threshold &&
+		setting.MinCharge.Enabled() &&
+		setting.MinCharge.TimeRange.InRange(model.TimeOnlyNow()) {
+		s.r.Logger().Info("minimum charge threshold is reached. start charging", slog.Int("battery_level", state.BatteryLevel))
+		return setting.MinCharge.Amperage, chargeActionChangeAmps
+	}
+
+	// check if the decision is stable
+	var decision int
+	decisions := make(map[int]struct{}, metricCount)
+	for _, metric := range metrics {
+		decision = DecideChargingAmps(metric, setting, state)
+		decisions[decision] = struct{}{}
+	}
+	if len(decisions) > 1 {
+		// skip at the moment. wait for decision stabilization
+		arr := make([]int, 0, len(decisions))
+		for d := range decisions {
+			arr = append(arr, d)
+		}
+		s.r.Logger().Info("decision is not stable. skip at the moment.", slog.String("decisions", fmt.Sprint(arr)))
+		return 0, chargeActionNoAction
+	}
+	return decision, chargeActionChangeAmps
+}
+
 // DecideChargingAmps decides the charging amps based on the current power metric, charge setting, and vehicle charge state.
+//
 // 充電中の場合:
 //   - 余剰電力が正の値で、ChargeCurrentRequest が ChargeCurrentRequestMax に達している場合は何もしない
 //   - 余剰電力が PowerUsageIncreaseThreshold より大きい場合、アンペアを増やす

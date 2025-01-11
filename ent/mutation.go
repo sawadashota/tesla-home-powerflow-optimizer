@@ -575,6 +575,12 @@ type ChargeSettingMutation struct {
 	addpower_usage_decrease_threshold *int
 	update_interval                   *int
 	addupdate_interval                *int
+	min_charge_threshold              *int
+	addmin_charge_threshold           *int
+	min_charge_time_range_start       *string
+	min_charge_time_range_end         *string
+	min_charge_amperage               *int
+	addmin_charge_amperage            *int
 	clearedFields                     map[string]struct{}
 	done                              bool
 	oldValue                          func(context.Context) (*ChargeSetting, error)
@@ -939,6 +945,190 @@ func (m *ChargeSettingMutation) ResetUpdateInterval() {
 	m.addupdate_interval = nil
 }
 
+// SetMinChargeThreshold sets the "min_charge_threshold" field.
+func (m *ChargeSettingMutation) SetMinChargeThreshold(i int) {
+	m.min_charge_threshold = &i
+	m.addmin_charge_threshold = nil
+}
+
+// MinChargeThreshold returns the value of the "min_charge_threshold" field in the mutation.
+func (m *ChargeSettingMutation) MinChargeThreshold() (r int, exists bool) {
+	v := m.min_charge_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinChargeThreshold returns the old "min_charge_threshold" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldMinChargeThreshold(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinChargeThreshold is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinChargeThreshold requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinChargeThreshold: %w", err)
+	}
+	return oldValue.MinChargeThreshold, nil
+}
+
+// AddMinChargeThreshold adds i to the "min_charge_threshold" field.
+func (m *ChargeSettingMutation) AddMinChargeThreshold(i int) {
+	if m.addmin_charge_threshold != nil {
+		*m.addmin_charge_threshold += i
+	} else {
+		m.addmin_charge_threshold = &i
+	}
+}
+
+// AddedMinChargeThreshold returns the value that was added to the "min_charge_threshold" field in this mutation.
+func (m *ChargeSettingMutation) AddedMinChargeThreshold() (r int, exists bool) {
+	v := m.addmin_charge_threshold
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMinChargeThreshold resets all changes to the "min_charge_threshold" field.
+func (m *ChargeSettingMutation) ResetMinChargeThreshold() {
+	m.min_charge_threshold = nil
+	m.addmin_charge_threshold = nil
+}
+
+// SetMinChargeTimeRangeStart sets the "min_charge_time_range_start" field.
+func (m *ChargeSettingMutation) SetMinChargeTimeRangeStart(s string) {
+	m.min_charge_time_range_start = &s
+}
+
+// MinChargeTimeRangeStart returns the value of the "min_charge_time_range_start" field in the mutation.
+func (m *ChargeSettingMutation) MinChargeTimeRangeStart() (r string, exists bool) {
+	v := m.min_charge_time_range_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinChargeTimeRangeStart returns the old "min_charge_time_range_start" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldMinChargeTimeRangeStart(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinChargeTimeRangeStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinChargeTimeRangeStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinChargeTimeRangeStart: %w", err)
+	}
+	return oldValue.MinChargeTimeRangeStart, nil
+}
+
+// ResetMinChargeTimeRangeStart resets all changes to the "min_charge_time_range_start" field.
+func (m *ChargeSettingMutation) ResetMinChargeTimeRangeStart() {
+	m.min_charge_time_range_start = nil
+}
+
+// SetMinChargeTimeRangeEnd sets the "min_charge_time_range_end" field.
+func (m *ChargeSettingMutation) SetMinChargeTimeRangeEnd(s string) {
+	m.min_charge_time_range_end = &s
+}
+
+// MinChargeTimeRangeEnd returns the value of the "min_charge_time_range_end" field in the mutation.
+func (m *ChargeSettingMutation) MinChargeTimeRangeEnd() (r string, exists bool) {
+	v := m.min_charge_time_range_end
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinChargeTimeRangeEnd returns the old "min_charge_time_range_end" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldMinChargeTimeRangeEnd(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinChargeTimeRangeEnd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinChargeTimeRangeEnd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinChargeTimeRangeEnd: %w", err)
+	}
+	return oldValue.MinChargeTimeRangeEnd, nil
+}
+
+// ResetMinChargeTimeRangeEnd resets all changes to the "min_charge_time_range_end" field.
+func (m *ChargeSettingMutation) ResetMinChargeTimeRangeEnd() {
+	m.min_charge_time_range_end = nil
+}
+
+// SetMinChargeAmperage sets the "min_charge_amperage" field.
+func (m *ChargeSettingMutation) SetMinChargeAmperage(i int) {
+	m.min_charge_amperage = &i
+	m.addmin_charge_amperage = nil
+}
+
+// MinChargeAmperage returns the value of the "min_charge_amperage" field in the mutation.
+func (m *ChargeSettingMutation) MinChargeAmperage() (r int, exists bool) {
+	v := m.min_charge_amperage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinChargeAmperage returns the old "min_charge_amperage" field's value of the ChargeSetting entity.
+// If the ChargeSetting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChargeSettingMutation) OldMinChargeAmperage(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinChargeAmperage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinChargeAmperage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinChargeAmperage: %w", err)
+	}
+	return oldValue.MinChargeAmperage, nil
+}
+
+// AddMinChargeAmperage adds i to the "min_charge_amperage" field.
+func (m *ChargeSettingMutation) AddMinChargeAmperage(i int) {
+	if m.addmin_charge_amperage != nil {
+		*m.addmin_charge_amperage += i
+	} else {
+		m.addmin_charge_amperage = &i
+	}
+}
+
+// AddedMinChargeAmperage returns the value that was added to the "min_charge_amperage" field in this mutation.
+func (m *ChargeSettingMutation) AddedMinChargeAmperage() (r int, exists bool) {
+	v := m.addmin_charge_amperage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMinChargeAmperage resets all changes to the "min_charge_amperage" field.
+func (m *ChargeSettingMutation) ResetMinChargeAmperage() {
+	m.min_charge_amperage = nil
+	m.addmin_charge_amperage = nil
+}
+
 // Where appends a list predicates to the ChargeSettingMutation builder.
 func (m *ChargeSettingMutation) Where(ps ...predicate.ChargeSetting) {
 	m.predicates = append(m.predicates, ps...)
@@ -973,7 +1163,7 @@ func (m *ChargeSettingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChargeSettingMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 9)
 	if m.enabled != nil {
 		fields = append(fields, chargesetting.FieldEnabled)
 	}
@@ -988,6 +1178,18 @@ func (m *ChargeSettingMutation) Fields() []string {
 	}
 	if m.update_interval != nil {
 		fields = append(fields, chargesetting.FieldUpdateInterval)
+	}
+	if m.min_charge_threshold != nil {
+		fields = append(fields, chargesetting.FieldMinChargeThreshold)
+	}
+	if m.min_charge_time_range_start != nil {
+		fields = append(fields, chargesetting.FieldMinChargeTimeRangeStart)
+	}
+	if m.min_charge_time_range_end != nil {
+		fields = append(fields, chargesetting.FieldMinChargeTimeRangeEnd)
+	}
+	if m.min_charge_amperage != nil {
+		fields = append(fields, chargesetting.FieldMinChargeAmperage)
 	}
 	return fields
 }
@@ -1007,6 +1209,14 @@ func (m *ChargeSettingMutation) Field(name string) (ent.Value, bool) {
 		return m.PowerUsageDecreaseThreshold()
 	case chargesetting.FieldUpdateInterval:
 		return m.UpdateInterval()
+	case chargesetting.FieldMinChargeThreshold:
+		return m.MinChargeThreshold()
+	case chargesetting.FieldMinChargeTimeRangeStart:
+		return m.MinChargeTimeRangeStart()
+	case chargesetting.FieldMinChargeTimeRangeEnd:
+		return m.MinChargeTimeRangeEnd()
+	case chargesetting.FieldMinChargeAmperage:
+		return m.MinChargeAmperage()
 	}
 	return nil, false
 }
@@ -1026,6 +1236,14 @@ func (m *ChargeSettingMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldPowerUsageDecreaseThreshold(ctx)
 	case chargesetting.FieldUpdateInterval:
 		return m.OldUpdateInterval(ctx)
+	case chargesetting.FieldMinChargeThreshold:
+		return m.OldMinChargeThreshold(ctx)
+	case chargesetting.FieldMinChargeTimeRangeStart:
+		return m.OldMinChargeTimeRangeStart(ctx)
+	case chargesetting.FieldMinChargeTimeRangeEnd:
+		return m.OldMinChargeTimeRangeEnd(ctx)
+	case chargesetting.FieldMinChargeAmperage:
+		return m.OldMinChargeAmperage(ctx)
 	}
 	return nil, fmt.Errorf("unknown ChargeSetting field %s", name)
 }
@@ -1070,6 +1288,34 @@ func (m *ChargeSettingMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateInterval(v)
 		return nil
+	case chargesetting.FieldMinChargeThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinChargeThreshold(v)
+		return nil
+	case chargesetting.FieldMinChargeTimeRangeStart:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinChargeTimeRangeStart(v)
+		return nil
+	case chargesetting.FieldMinChargeTimeRangeEnd:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinChargeTimeRangeEnd(v)
+		return nil
+	case chargesetting.FieldMinChargeAmperage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinChargeAmperage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown ChargeSetting field %s", name)
 }
@@ -1090,6 +1336,12 @@ func (m *ChargeSettingMutation) AddedFields() []string {
 	if m.addupdate_interval != nil {
 		fields = append(fields, chargesetting.FieldUpdateInterval)
 	}
+	if m.addmin_charge_threshold != nil {
+		fields = append(fields, chargesetting.FieldMinChargeThreshold)
+	}
+	if m.addmin_charge_amperage != nil {
+		fields = append(fields, chargesetting.FieldMinChargeAmperage)
+	}
 	return fields
 }
 
@@ -1106,6 +1358,10 @@ func (m *ChargeSettingMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedPowerUsageDecreaseThreshold()
 	case chargesetting.FieldUpdateInterval:
 		return m.AddedUpdateInterval()
+	case chargesetting.FieldMinChargeThreshold:
+		return m.AddedMinChargeThreshold()
+	case chargesetting.FieldMinChargeAmperage:
+		return m.AddedMinChargeAmperage()
 	}
 	return nil, false
 }
@@ -1142,6 +1398,20 @@ func (m *ChargeSettingMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUpdateInterval(v)
+		return nil
+	case chargesetting.FieldMinChargeThreshold:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMinChargeThreshold(v)
+		return nil
+	case chargesetting.FieldMinChargeAmperage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMinChargeAmperage(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ChargeSetting numeric field %s", name)
@@ -1184,6 +1454,18 @@ func (m *ChargeSettingMutation) ResetField(name string) error {
 		return nil
 	case chargesetting.FieldUpdateInterval:
 		m.ResetUpdateInterval()
+		return nil
+	case chargesetting.FieldMinChargeThreshold:
+		m.ResetMinChargeThreshold()
+		return nil
+	case chargesetting.FieldMinChargeTimeRangeStart:
+		m.ResetMinChargeTimeRangeStart()
+		return nil
+	case chargesetting.FieldMinChargeTimeRangeEnd:
+		m.ResetMinChargeTimeRangeEnd()
+		return nil
+	case chargesetting.FieldMinChargeAmperage:
+		m.ResetMinChargeAmperage()
 		return nil
 	}
 	return fmt.Errorf("unknown ChargeSetting field %s", name)

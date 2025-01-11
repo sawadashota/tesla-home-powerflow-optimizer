@@ -33,3 +33,5 @@ test.db
 # TypeSpec
 node_modules
 tsp-output
+
+bin
